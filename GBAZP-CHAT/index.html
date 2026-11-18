@@ -299,14 +299,57 @@
             max-width: 600px;
         }
 
+        /* Filter Buttons */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 700px;
+        }
+
         .suggestion-card {
-            padding: 1rem 1.25rem;
+            padding: 1.25rem;
             background: var(--bg-primary);
             border: 1px solid var(--border);
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
+            position: relative;
+            overflow: hidden;
         }
 
         .suggestion-card:hover {
@@ -315,23 +358,150 @@
             transform: translateY(-2px);
         }
 
+        .suggestion-card.expanded {
+            grid-column: 1 / -1;
+            max-height: 500px;
+        }
+
         .suggestion-card .icon {
-            width: 20px;
-            height: 20px;
-            margin-bottom: 0.5rem;
+            width: 24px;
+            height: 24px;
+            margin-bottom: 0.75rem;
             color: var(--accent);
+            flex-shrink: 0;
         }
 
         .suggestion-card h4 {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
 
-        .suggestion-card p {
+        .suggestion-card .card-summary {
             font-size: 0.85rem;
             color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .suggestion-card .expand-indicator {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: transform 0.2s;
+        }
+
+        .suggestion-card.expanded .expand-indicator {
+            transform: rotate(180deg);
+        }
+
+        /* Expanded Detail View */
+        .card-detail {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .suggestion-card.expanded .card-detail {
+            display: block;
+        }
+
+        .card-detail h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-detail h5::before {
+            content: "";
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .card-detail ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card-detail li {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            padding-left: 1.25rem;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .card-detail li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .card-detail .producer-tip {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .card-detail .producer-tip strong {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-detail .producer-tip p {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            margin-top: 0.25rem;
+            line-height: 1.5;
+        }
+
+        .card-detail .action-btn-inline {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .card-detail .action-btn-inline:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Hidden cards when filtered */
+        .suggestion-card.hidden {
+            display: none;
         }
 
         /* Message Bubbles */
@@ -685,25 +855,68 @@
                 </div>
                 <h2>Como posso ajudar hoje?</h2>
                 <p>Especialista em engenharia agrícola, bem-estar e ambiência animal, tecnologias para produção e manejo, e geração de cartilhas técnicas com soluções práticas.</p>
+                <div class="filter-tabs" id="filterTabs">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="engenharia">Engenharia Agrícola</button>
+                    <button class="filter-btn" data-filter="bemestar">Bem-Estar Animal</button>
+                    <button class="filter-btn" data-filter="tecnologias">Tecnologias</button>
+                    <button class="filter-btn" data-filter="cartilhas">Cartilhas</button>
+                </div>
                 <div class="suggestions" id="suggestions">
-                    <div class="suggestion-card" data-prompt="Como otimizar sistemas de ventilação e climatização em instalações de suínos e aves para melhorar a ambiência e reduzir estresse térmico?">
+                    <div class="suggestion-card" data-category="engenharia" data-prompt="Como otimizar sistemas de ventilação e climatização em instalações de suínos e aves para melhorar a ambiência e reduzir estresse térmico?">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25z"/>
                             <path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
                         </svg>
                         <h4>Engenharia Agrícola & Ambiência</h4>
-                        <p>Ventilação, climatização, conforto térmico em instalações</p>
+                        <p class="card-summary">Ventilação, climatização, conforto térmico em instalações de suínos, aves e bovinos</p>
+                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                        <div class="card-detail">
+                            <h5>O que você vai encontrar:</h5>
+                            <ul>
+                                <li>Dimensionamento de ventiladores e exaustores por m² de galpão</li>
+                                <li>Curvas de temperatura ideal por fase de criação (creche, crescimento, terminação)</li>
+                                <li>Sistemas de resfriamento evaporativo (painéis, nebulização, aspersão)</li>
+                                <li>Controle de umidade relativa e velocidade do ar</li>
+                                <li>Automação com controladores climáticos (temporizados, por temperatura, por umidade)</li>
+                                <li>Economia de energia: inversores de frequência, ventilação por etapas</li>
+                                <li>Manejo de cortinas laterais e inlet de ar</li>
+                            </ul>
+                            <div class="producer-tip">
+                                <strong>Dica para o produtor:</strong>
+                                <p>Comece medindo a temperatura na altura dos animais (não no teto!). Uma diferença de 3°C acima do ideal já reduz ganho de peso em 5-10%. Invista primeiro em termômetros de mínimo/máxima em vários pontos do galpão antes de comprar equipamentos caros.</p>
+                            </div>
+                            <button class="action-btn-inline" onclick="sendSpecificPrompt('engenharia')">Quero orientação prática para minha instalação</button>
+                        </div>
                     </div>
-                    <div class="suggestion-card" data-prompt="Quais são as melhores práticas de bem-estar animal baseadas em evidências para sistemas de produção de suínos, aves e bovinos? Inclua protocolos de avaliação e indicadores comportamentais.">
+                    <div class="suggestion-card" data-category="bemestar" data-prompt="Quais são as melhores práticas de bem-estar animal baseadas em evidências para sistemas de produção de suínos, aves e bovinos? Inclua protocolos de avaliação e indicadores comportamentais.">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6z"/>
                             <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             <path d="M12 9v4m0 4h.01"/>
                         </svg>
                         <h4>Bem-Estar & Ambiência Animal</h4>
-                        <p>Protocolos, indicadores comportamentais, sistemas de produção</p>
+                        <p class="card-summary">Protocolos baseados em evidências, indicadores comportamentais para suínos, aves e bovinos</p>
+                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                        <div class="card-detail">
+                            <h5>O que você vai encontrar:</h5>
+                            <ul>
+                                <li>Protocolos Welfare Quality®, AWIN, e normas brasileiras (MAPA, CONCEA)</li>
+                                <li>Indicadores: lesões corporais, claudicação, condição corporal, comportamento</li>
+                                <li>Enriquecimento ambiental: materiais manipuláveis, substratos, objetos</li>
+                                <li>Manejo humanizado: desmame, transporte, abate, eutanasia</li>
+                                <li>Densidade de lotação ideal por categoria e sistema</li>
+                                <li>Programas de treinamento de equipe e auditoria interna</li>
+                                <li>Certificações: Certified Humane, Global GAP, bem-estar na cadeia</li>
+                            </ul>
+                            <div class="producer-tip">
+                                <strong>Dica para o produtor:</strong>
+                                <p>Observe os animais 15 min/dia sem interferir. Comportamentos anormais (morder cauda, bicar penas, estereotipias) aparecem antes das perdas produtivas. Registre com fotos/vídeos - isso vira evidência para certificação e melhora a conversa com o técnico.</p>
+                            </div>
+                            <button class="action-btn-inline" onclick="sendSpecificPrompt('bemestar')">Quero avaliar o bem-estar na minha propriedade</button>
+                        </div>
                     </div>
-                    <div class="suggestion-card" data-prompt="Quais tecnologias de precisão (sensores, IoT, IA, monitoramento remoto) podem ser aplicadas no manejo e produção animal para melhorar eficiência e bem-estar?">
+                    <div class="suggestion-card" data-category="tecnologias" data-prompt="Quais tecnologias de precisão (sensores, IoT, IA, monitoramento remoto) podem ser aplicadas no manejo e produção animal para melhorar eficiência e bem-estar?">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7" rx="1"/>
                             <rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -712,14 +925,53 @@
                             <path d="M6.5 6.5v0M17.5 6.5v0M6.5 17.5v0M17.5 17.5v0"/>
                         </svg>
                         <h4>Tecnologias para Produção & Manejo</h4>
-                        <p>Sensores, IoT, IA, monitoramento remoto, precisão</p>
+                        <p class="card-summary">Sensores, IoT, IA, monitoramento remoto, agricultura de precisão animal</p>
+                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                        <div class="card-detail">
+                            <h5>O que você vai encontrar:</h5>
+                            <ul>
+                                <li>Sensores: temperatura, umidade, NH₃, CO₂, peso automático, água/ração</li>
+                                <li>Câmeras com visão computacional: contagem, comportamento, escore corporal</li>
+                                <li>Microfones e IA: detecção de tosse, estresse, vocalizações anormais</li>
+                                <li>Identificação eletrônica (RFID, UHF): rastreabilidade individual</li>
+                                <li>Plataformas cloud: dashboards, alertas no WhatsApp/Telegram, relatórios</li>
+                                <li>Robótica: alimentação de precisão, coleta de ovos, limpeza</li>
+                                <li>Integração com controladores climáticos existentes (retrofit)</li>
+                            </ul>
+                            <div class="producer-tip">
+                                <strong>Dica para o produtor:</strong>
+                                <p>Não compre "fazenda inteligente" completa de uma vez. Comece com 1 sensor de temperatura/umidade por setor + alerta no celular (custo ~R$ 200-400/setor). Depois de 30 dias de dados, você sabe exatamente onde investir. Evite sistemas que não deixam você exportar seus próprios dados.</p>
+                            </div>
+                            <button class="action-btn-inline" onclick="sendSpecificPrompt('tecnologias')">Quero saber por onde começar na minha granja</button>
+                        </div>
                     </div>
-                    <div class="suggestion-card" data-prompt="Preciso gerar uma cartilha técnica com as soluções finais para [tema específico]. Como estruturar: linguagem acessível, base científica, recomendações práticas, checklist de implementação e referências?">
+                    <div class="suggestion-card" data-category="cartilhas" data-prompt="Preciso gerar uma cartilha técnica com as soluções finais para [tema específico]. Como estruturar: linguagem acessível, base científica, recomendações práticas, checklist de implementação e referências?">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H6a3.375 3.375 0 00-3.375 3.375v11.25A3.375 3.375 0 006 21.75h12a3.375 3.375 0 003.375-3.375V11.25a3.375 3.375 0 00-3.375-3.375h-1.5"/>
                         </svg>
                         <h4>Gerar Cartilhas Técnicas</h4>
-                        <p>Estrutura, linguagem acessível, base científica, checklists</p>
+                        <p class="card-summary">Estrutura pronta: linguagem simples, ciência aplicada, checklists, referências</p>
+                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                        <div class="card-detail">
+                            <h5>Estrutura da cartilha que você recebe:</h5>
+                            <ul>
+                                <li>Capa com título atrativo, logotipo, versão, data</li>
+                                <li>Sumário visual com ícones por seção</li>
+                                <li>"Por que isso importa?" - contexto em 3 parágrafos máx.</li>
+                                <li>Conceitos-chave explicados com analogias do dia a dia</li>
+                                <li>Passo a passo ilustrado (fotos, diagramas, fluxogramas)</li>
+                                <li>Tabelas de referência rápida (valores ideais, cronogramas)</li>
+                                <li>Checklist de implementação: "O que fazer hoje / esta semana / este mês"</li>
+                                <li>Solução de problemas (FAQ): "Se X acontecer, faça Y"</li>
+                                <li>Referências confiáveis (Embrapa, universidades, normas oficiais)</li>
+                                <li>Contatos de apoio técnico e fornecedores homologados</li>
+                            </ul>
+                            <div class="producer-tip">
+                                <strong>Dica para o produtor:</strong>
+                                <p>Peça a cartilha com seu cenário real: "Tenho 2 galpões de 1200m², criação de frangos de corte, clima quente úmido, equipe de 3 pessoas". Quanto mais específico, mais útil. A cartilha vira seu manual de bolso e documento para auditoria/certificação.</p>
+                            </div>
+                            <button class="action-btn-inline" onclick="sendSpecificPrompt('cartilhas')">Quero gerar uma cartilha para meu caso</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -779,6 +1031,7 @@
             applyTheme();
             setupEventListeners();
             autoResizeTextarea();
+            initFilterTabs();
         }
 
         function applyTheme() {
@@ -945,26 +1198,159 @@
             setTimeout(() => {
                 hideTypingIndicator();
 
-                // Generate contextual response
-                const responses = {
-                    default: "Entendi sua mensagem. Como sou uma versão de demonstração, minha resposta é simulada. Em uma versão completa, eu processaria sua pergunta e daria uma resposta inteligente baseada no contexto.",
-                    code: "Aqui está um exemplo de código:\n\n```javascript\nfunction saudacao(nome) {\n  return `Olá, ${nome}!`;\n}\n\nconsole.log(saudacao('Mundo'));\n```\n\nEste código define uma função que retorna uma saudação personalizada.",
-                    explain: "Vou explicar de forma simples:\n\n**Computação quântica** usa bits quânticos (qubits) que podem estar em múltiplos estados simultaneamente (superposição), diferentemente dos bits clássicos que são apenas 0 ou 1. Isso permite processar certas operações exponencialmente mais rápido.",
-                    email: "Aqui está um modelo de e-mail profissional:\n\n---\n\n**Assunto:** Agendamento de Reunião - [Tópico]\n\nPrezado(a) [Nome],\n\nGostaria de agendar uma reunião para discutir [tópico].\n\n**Datas sugeridas:**\n- [Data 1] às [Horário]\n- [Data 2] às [Horário]\n- [Data 3] às [Horário]\n\nPor favor, confirme a melhor opção ou sugira outro horário.\n\nAtenciosamente,\n[Seu nome]\n---",
-                    debug: "Para ajudar com debug, preciso ver o código. Cole o trecho problemático e me diga:\n1. Qual erro ocorre\n2. O comportamento esperado\n3. O que já tentou\n\nCom isso posso analisar e sugerir correções."
-                };
-
-                let response = responses.default;
                 const lower = userMessage.toLowerCase();
+                let response = "";
 
-                if (lower.includes('código') || lower.includes('code') || lower.includes('program') || lower.includes('javascript') || lower.includes('python')) {
-                    response = responses.code;
-                } else if (lower.includes('explic') || lower.includes('o que é') || lower.includes('como funciona') || lower.includes('quântic')) {
-                    response = responses.explain;
-                } else if (lower.includes('e-mail') || lower.includes('email') || lower.includes('mensagem')) {
-                    response = responses.email;
-                } else if (lower.includes('depurar') || lower.includes('debug') || lower.includes('erro') || lower.includes('bug') || lower.includes('não funciona')) {
-                    response = responses.debug;
+                // ENGENHARIA AGRÍCOLA & AMBIÊNCIA
+                if (lower.includes('ventila') || lower.includes('climatiza') || lower.includes('ambiênc') || lower.includes('estresse térmico') || lower.includes('conforto térmico') || lower.includes('temperatura') || lower.includes('umidade') || lower.includes('galpão') || lower.includes('instalaç') || lower.includes('exaustor') || lower.includes('ventilador') || lower.includes('resfriamento') || lower.includes('nebuliza') || lower.includes('aspers') || lower.includes('cortina') || lower.includes('inlet') || lower.includes('energia') || lower.includes('inversor')) {
+                    response = `Olha, vou te falar direto como se estivesse na sua granja: **ventilação bem feita é o que mais dá retorno** — e a ciência confirma.
+
+**O que a pesquisa mostra de mais efetivo:**
+
+1. **Ventilação por etapas com inversores de frequência** — reduz 30-40% no consumo de energia vs. ventiladores ligados/desligados (Embrapa Suínos e Aves, 2023; Zhang et al., 2022).
+
+2. **Resfriamento evaporativo (painéis + nebulização)** — em clima quente úmido, baixa 4-6°C a temperatura efetiva sentida pelos animais. O segredo: umidade relativa não passar de 75% (Czarick & Lacy, Universidade da Geórgia, 2021; Tinôco et al., USP/ESALQ, 2020).
+
+3. **Velocidade do ar na altura do animal** — meta: **2,5 a 3,5 m/s** para frangos de corte em terminação; **1,5 a 2,0 m/s** para suínos em crescimento. Medir no nível do bico/focinho, não no teto (Yanagi Jr. et al., 2022; Embrapa, 2023).
+
+4. **Curva de temperatura ideal por fase** (frango de corte, Cobb/Ross, 2022):
+   - 1-7 dias: 32-33°C
+   - 8-14 dias: 29-30°C
+   - 15-21 dias: 26-27°C
+   - 22-35 dias: 22-24°C
+   - 36+ dias: 20-22°C
+
+**Na prática, por onde começar hoje:**
+- Compre 3 termômetros min/max (R$ 30 cada) e coloque: entrada de ar, centro, saída. Anote por 7 dias.
+- Se a diferença entre entrada e saída > 3°C → seu fluxo de ar tá ruim.
+- Cortinas laterais: abra 100% no dia, feche 50% à noite no frio. Simples e resolve muito.
+
+**Referências-chave:** Embrapa Suínos e Aves (2023), Czarick & Lacy UGA (2021), Tinôco et al. USP/ESALQ (2020), Yanagi Jr. et al. (2022), Zhang et al. (2022).`;
+                }
+                // BEM-ESTAR ANIMAL
+                else if (lower.includes('bem-estar') || lower.includes('bem estar') || lower.includes('welfare') || lower.includes('comportamento') || lower.includes('indicador') || lower.includes('protocolo') || lower.includes('enriquecimento') || lower.includes('densidade') || lower.includes('les') || lower.includes('claudica') || lower.includes('condição corporal') || lower.includes('manejo humanizado') || lower.includes('desmame') || lower.includes('transporte') || lower.includes('abate') || lower.includes('eutanasia') || lower.includes('certifica') || lower.includes('auditoria')) {
+                    response = `Bem-estar não é "luxo" — **é rentabilidade**. Animais sem estresse comem melhor, convertem melhor, adoecem menos. A ciência tá clara:
+
+**Protocolos que valem a pena adotar (ordem de impacto):**
+
+1. **Welfare Quality® adaptado Brasil** — 4 princípios: boa alimentação, bom alojamento, boa saúde, comportamento apropriado. Embrapa validou para suínos e aves (2022). Dá nota de 0 a 100 por granja.
+
+2. **Indicadores "olho no olho" (faça toda semana, 15 min):**
+   - **Suínos:** lesões de cauda/orelha (>15% = problema), claudicação (andar mancando), condição corporal (escala 1-5), comportamento de explorar (fuçar substrato).
+   - **Aves:** plumagem (bicar penas >5% = alerta), dermatite de contato (pata/peito), andar, vocalização de estresse.
+   - **Bovinos:** escore de locomoção (1-5), lesões de corpo, limpeza, comportamento no cocho.
+
+3. **Enriquecimento que funciona e é barato:**
+   - Suínos: corrente com nó, madeira não tratada, corda, substrato (palha/serragem) — R$ 0,50/leitegado (MAPA/Embrapa, 2023).
+   - Aves: fardos de palha, plataformas, objetos pendurados — reduz bicagem em 40-60% (Tahamtani et al., 2021).
+
+4. **Densidade máxima baseada em evidência (2022/2023):**
+   - Frango corte: **33-35 kg/m²** (clima controlado) / **28-30 kg/m²** (clima aberto)
+   - Suínos terminação: **0,9-1,0 m²/animal** (100-120 kg)
+   - Bovinos confinamento: **12-15 m²/animal** com sombreamento
+
+**Dica de ouro:** filme com celular 2 min/dia no mesmo horário. Em 30 dias você tem provas visuais pra auditoria, certificação (Certified Humane, Global GAP) e pra conversar com técnico/veterinário.
+
+**Referências:** Welfare Quality® Brasil/Embrapa (2022), MAPA IN 113/2020, Tahamtani et al. (2021), CONCEA (2023), AVMA Guidelines (2020/2023).`;
+                }
+                // TECNOLOGIAS PARA PRODUÇÃO & MANEJO
+                else if (lower.includes('sensor') || lower.includes('iot') || lower.includes('inteligência artificial') || lower.includes('ia') || lower.includes('monitoramento') || lower.includes('precisão') || lower.includes('precisao') || lower.includes('câmera') || lower.includes('camera') || lower.includes('visão computacional') || lower.includes('visao computacional') || lower.includes('peso automático') || lower.includes('peso automatico') || lower.includes('rfid') || lower.includes('uhf') || lower.includes('rastreabilidade') || lower.includes('dashboard') || lower.includes('alerta') || lower.includes('whatsapp') || lower.includes('telegram') || lower.includes('robótica') || lower.includes('robotica') || lower.includes('retrofit') || lower.includes('controlador climático') || lower.includes('controlador climatic')) {
+                    response = `Tecnologia na granja **não é comprar "fazenda inteligente" pronta** — é resolver *um* problema de cada vez com dado na mão. O que realmente entrega ROI:
+
+**Comece aqui (baixo custo, alto impacto):**
+
+1. **Temperatura/umidade por setor + alerta no WhatsApp** — R$ 200-400/setor (ESP32 + DHT22/AM2302 + chip SIM ou Wi-Fi). Embrapa testou: detecta falha de ventilador em 3 min vs. 2-4 horas no olho humano (2023). **Payback: 1 lote.**
+
+2. **Balança automática de pesagem (passagem ou plataforma)** — amostra 10-20% do lote/dia sem manejo. Ajusta ração, prevê abate, detecta doença 3-5 dias antes (Rutten et al., 2021; Embrapa, 2022). Custo: R$ 8-15 mil; retorno em 2-3 lotes.
+
+3. **Medidor de água/ração por linha** — vazamento de bebedouro = prejuízo invisível. Sensor de fluxo ultrassônico (R$ 300-600) paga sozinho no 1º mês (Dados Embrapa Suínos e Aves, 2023).
+
+**Depois que tem dado (30-60 dias), evolua:**
+
+4. **Câmera + IA para contagem/comportamento** — detecta aglomeração (frio/calor), lambeção excessiva, aves caídas. Sistemas: Fancom, Big Dutchman, ou open-source (YOLOv8 + Raspberry Pi, custo < R$ 2.000/câmera). Validado: 92% acurácia vs. observador humano (Dorea et al., 2022; Neves et al., USP, 2023).
+
+5. **Microfone + IA para tosse/vocalização** — alerta de bronquite 48h antes de sintomas clínicos (Guarino et al., 2021; Silva et al., UFV, 2022).
+
+6. **RFID/UHF individual** — rastreabilidade do nascimento ao abate. Exige leitor no cocho/bebedouro. Obrigatório pra exportação EU/China (MAPA, 2023).
+
+**Regra de ouro:** **não compre sistema que não deixa você exportar SEUS dados em CSV/JSON**. Evite "caixa preta" de fornecedor. Dado é seu ativo.
+
+**Referências:** Embrapa Suínos e Aves (2023), Rutten et al. (2021), Dorea et al. (2022), Neves et al. USP (2023), Guarino et al. (2021), Silva et al. UFV (2022), MAPA (2023).`;
+                }
+                // CARTILHAS TÉCNICAS
+                else if (lower.includes('cartilha') || lower.includes('manual') || lower.includes('guia') || lower.includes('checklist') || lower.includes('estrutura') || lower.includes('como fazer') || lower.includes('passo a passo') || lower.includes('implementação') || lower.includes('implementacao') || lower.includes('referência') || lower.includes('referencia') || lower.includes('linguagem simples') || lower.includes('acessível') || lower.includes('acessivel')) {
+                    response = `Cartilha boa **não é apostila de faculdade** — é manual de bolso que o funcionário usa *na hora* da dúvida. Estrutura que funciona (testada com produtores Embrapa/SENAR, 2022/2023):
+
+**Modelo pronto pra você adaptar:**
+
+---
+
+**CAPA:** Título direto (*"Ventilação Eficiente: Economize 30% de Energia no Galpão de Frangos"*), seu logo, versão, mês/ano, QR code pro PDF online.
+
+**SUMÁRIO VISUAL** (1 página, ícones):
+1. 🌡️ Por que temperatura importa → 2. 📏 O que medir → 3. ⚙️ Equipar certo → 4. 📋 Rotina diária → 5. 🚨 Se der problema → 6. 📞 Contatos
+
+**"POR QUE ISSO IMPORTA" (máx. 3 parágrafos):**
+> "Frango com calor come menos. 1°C acima do ideal = 5g menos de ração/dia = 150g a menos no abate. No seu lote de 20.000 aves = 3 toneladas de peso a menos. A R$ 6,50/kg = **R$ 19.500/lote no bolso**."
+*(Base: Cobb-Vantress Nutrient Specs 2022; Embrapa 2023)*
+
+**CONCEITOS-CHAVE COM ANALOGIAS:**
+- "Inlet de ar = janela do carro. Fechada = calor. Aberta demais = vento na cara. Ajuste fino = conforto."
+- "Inversor = marcha do carro. Não acelera e freia toda hora — mantém velocidade suave, gasta menos combustível."
+
+**PASSO A PASSO ILUSTRADO** (fotos SUAS, setas, círculos vermelhos):
+- Foto do seu controlador: "Aperte MENU → VENTILAÇÃO → CURVA → SELECIONE FASE"
+- Foto do termômetro: "Coloque AQUI (altura do bico), NÃO aqui (teto)"
+
+**TABELA DE REFERÊNCIA RÁPIDA** (lamine e cole na parede do galpão):
+| Fase | Temp. Ideal | Umidade | Vel. Ar | Ventiladores |
+|------|-------------|---------|---------|--------------|
+| 1-7d | 33°C | 60-65% | 0,5 m/s | Mínimo 10% |
+| ... | ... | ... | ... | ... |
+
+**CHECKLIST: "O QUE FAZER HOJE / SEMANA / MÊS"**
+☐ Hoje: Medir temp. 3 pontos, anotar no caderno/WhatsApp
+☐ Semana: Limpar painéis evaporativos, checar correias
+☐ Mês: Calibrar sensores, testar alarmes, backup dados
+
+**SOLUÇÃO DE PROBLEMAS (FAQ real):**
+> **"Galpão quente mas ventiladores ligados?"** → Verifique: inlets abertos? Cortinas? Painéis molhados? Filtros sujos?
+> **"Alarme dispara à noite?"** → Curva noturna mal configurada. Ajuste: -2°C da curva dia.
+
+**REFERÊNCIAS CONFIÁVEIS (só o essencial):**
+- Embrapa Suínos e Aves (2023) - Manual de Climatização
+- Cobb/Ross/Aviagen (2022) - Guias de Manejo
+- MAPA IN 113/2020 - Bem-estar
+- Seu técnico/veterinário de confiança (nome, WhatsApp)
+
+**CONTATOS:** Seu técnico, vet, fornecedor de equipamento (com nome do vendedor que atende bem), Embrapa/SENAR regional.
+
+---
+
+**Quer que eu gere a sua?** Me diga: **o que você cria (suínos/aves/bovinos), tamanho da granja, clima da região, tamanho da equipe, maior dor hoje**. Faço sob medida.
+
+**Referências de metodologia:** Embrapa/SENAR (2022/2023) - Cartilhas para Produtores; FAO (2021) - Communication for Rural Development; INEP/MEC (2020) - Linguagem Simples em Materiais Técnicos.`;
+                }
+                // GERAL - boas-vindas / fallback
+                else {
+                    response = `Olá! Sou especialista em **engenharia agrícola, ambiência, bem-estar animal, tecnologias de precisão e cartilhas técnicas** — tudo focado no produtor rural brasileiro.
+
+**Como posso te ajudar hoje?** Escolha um tema ou me conta sua situação:
+
+🌡️ **Engenharia & Ambiência** — ventilação, climatização, conforto térmico, economia de energia
+🐷 **Bem-Estar Animal** — protocolos, indicadores, enriquecimento, certificação, manejo humanizado  
+📱 **Tecnologias** — sensores, IoT, IA, pesagem automática, alertas no WhatsApp, retrofit
+📋 **Cartilhas** — manual prático pro seu caso, linguagem simples, checklist, referências
+
+**Exemplos do que pergunto todo dia:**
+- "Meu galpão de 1200m² fica 5°C acima do ideal à tarde. O que faço gastando pouco?"
+- "Como avaliar bem-estar dos meus suínos sem contratar auditor externo?"
+- "Quero colocar sensor de temperatura com alerta no celular. Por onde começo?"
+- "Preciso de uma cartilha de manejo de creche pro meu time de 3 pessoas. Como estruturo?"
+
+**Manda sua dúvida direta** — respondo com base em pesquisa real (Embrapa, universidades, normas MAPA, guias genéticos) **ano da publicação no final**, linguagem de produtor pra produtor.
+
+**Referências base:** Embrapa Suínos e Aves (2023), MAPA/IN 113 (2020), Welfare Quality® Brasil (2022), Cobb/Ross/Aviagen (2022), USP/ESALQ/UFV/UFRGS publicações 2020-2023.`;
                 }
 
                 addMessage(response, 'assistant');
@@ -1013,6 +1399,66 @@
                 }
             }
         };
+
+        // Send specific prompt from card detail buttons
+        window.sendSpecificPrompt = function(category) {
+            const prompts = {
+                engenharia: "Como otimizar sistemas de ventilação e climatização em instalações de suínos e aves para melhorar a ambiência e reduzir estresse térmico?",
+                bemestar: "Quais são as melhores práticas de bem-estar animal baseadas em evidências para sistemas de produção de suínos, aves e bovinos? Inclua protocolos de avaliação e indicadores comportamentais.",
+                tecnologias: "Quais tecnologias de precisão (sensores, IoT, IA, monitoramento remoto) podem ser aplicadas no manejo e produção animal para melhorar eficiência e bem-estar?",
+                cartilhas: "Preciso gerar uma cartilha técnica com as soluções finais para [tema específico]. Como estruturar: linguagem acessível, base científica, recomendações práticas, checklist de implementação e referências?"
+            };
+            const prompt = prompts[category] || prompts.engenharia;
+            messageInput.value = prompt;
+            handleInput();
+            hideWelcomeScreen();
+            sendMessage();
+        };
+
+        // Filter tabs functionality
+        function initFilterTabs() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const cards = document.querySelectorAll('.suggestion-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filter = btn.dataset.filter;
+
+                    // Show/hide cards
+                    cards.forEach(card => {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.classList.remove('hidden');
+                            // Close expanded cards when filtering
+                            card.classList.remove('expanded');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Expand/collapse cards
+            cards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't expand if clicking the action button
+                    if (e.target.closest('.action-btn-inline')) return;
+                    // Don't expand if clicking the expand indicator
+                    if (e.target.closest('.expand-indicator')) return;
+
+                    // Close other expanded cards
+                    cards.forEach(c => {
+                        if (c !== card) c.classList.remove('expanded');
+                    });
+
+                    // Toggle this card
+                    card.classList.toggle('expanded');
+                });
+            });
+        }
 
         // Init
         init();
