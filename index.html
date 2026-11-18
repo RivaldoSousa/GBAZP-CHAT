@@ -593,6 +593,49 @@
             align-items: center;
         }
 
+        .voice-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .voice-btn:hover:not(:disabled) {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .voice-btn.listening {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        .voice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .voice-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+        }
+
         .send-btn {
             width: 52px;
             height: 52px;
@@ -703,41 +746,57 @@
                     <span class="placeholder" style="display:none;">GZ</span>
                 </div>
                 <h2>Como posso ajudar hoje?</h2>
-                <p>Faça perguntas, peça análises, crie conteúdo, programe ou apenas converse.</p>
+                <p>Pesquisa acadêmica com citações (autor, ano) • Busca por voz • Análises baseadas em evidência</p>
                 <div class="suggestions" id="suggestions">
-                    <div class="suggestion-card" data-prompt="Explique computação quântica de forma simples">
+                    <div class="suggestion-card" data-prompt="Explique computação quântica com referências acadêmicas">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                         </svg>
-                        <h4>Explicar conceitos</h4>
-                        <p>Torne tópicos complexos fáceis de entender</p>
+                        <h4>Computação Quântica</h4>
+                        <p>Algoritmos, hardware, estado da arte (Nielsen & Chuang, 2010)</p>
                     </div>
-                    <div class="suggestion-card" data-prompt="Escreva um e-mail profissional para agendar uma reunião">
+                    <div class="suggestion-card" data-prompt="Panorama de machine learning e deep learning com citações">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
-                        <h4>Escrever e-mails</h4>
-                        <p>Rascunhe mensagens profissionais em segundos</p>
+                        <h4>Machine Learning / IA</h4>
+                        <p>Transformers, LLMs, benchmarks (Vaswani et al., 2017)</p>
                     </div>
-                    <div class="suggestion-card" data-prompt="Me ajude a depurar este código JavaScript">
+                    <div class="suggestion-card" data-prompt="IA em medicina: diagnóstico, descoberta de fármacos, evidências">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="16 18 22 12 16 6"/>
-                            <polyline points="8 6 2 12 8 18"/>
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
                         </svg>
-                        <h4>Ajuda com código</h4>
-                        <p>Debug, refatoração e explicações técnicas</p>
+                        <h4>IA na Medicina</h4>
+                        <p>Diagnóstico por imagem, AlphaFold, ensaios clínicos (Topol, 2019)</p>
                     </div>
-                    <div class="suggestion-card" data-prompt="Faça um resumo dos pontos principais deste texto">
+                    <div class="suggestion-card" data-prompt="Mudanças climáticas: consenso IPCC, mitigação, adaptação">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10 9 9 9 8 9"/>
+                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
                         </svg>
-                        <h4>Resumir textos</h4>
-                        <p>Extraia o essencial de artigos e documentos</p>
+                        <h4>Mudanças Climáticas</h4>
+                        <p>IPCC AR6, orçamento carbono, NbS (IPCC, 2021-2023)</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Economia do desenvolvimento: políticas baseadas em evidência">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        <h4>Economia do Desenvolvimento</h4>
+                        <p>RCTs, transferências de renda, instituições (Banerjee & Duflo, 2019)</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Psicologia baseada em evidência: TCC, vieses, bem-estar">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a6 6 0 0 0-6 6v10a6 6 0 0 0 12 0V8a6 6 0 0 0-6-6z"/>
+                            <path d="M12 16v4"/>
+                            <path d="M8 12h8"/>
+                        </svg>
+                        <h4>Psicologia Científica</h4>
+                        <p>Sistema 1/2, TCC, reprodutibilidade (Kahneman, 2011)</p>
                     </div>
                 </div>
             </div>
@@ -760,6 +819,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                             </svg>
                         </button>
+                        <button class="voice-btn" id="voiceBtn" title="Busca por voz (clique e fale)">
+                            <svg class="mic-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                            <svg class="mic-slash-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 18.889c-.553-.076-1.07-.225-1.532-.457A8.973 8.973 0 0012 19c-2.605 0-4.96-.916-6.737-2.362C2.67 14.23 1 10.794 1 7c0-2.58 1.741-4.807 4.063-5.535.315-.102.634-.175.955-.175h.084a7.02 7.02 0 015.987 2.438 5.99 5.99 0 012.42 4.38M15 15a3 3 0 11-6 0M9 12.75V16m3.75-7.431a3.977 3.977 0 00-1.134-.27 3.43 3.43 0 00-3.638 0 3.6 3.6 0 00-.458 2.124M21 15a4 4 0 00-4-4h-1M3 3l18 18" />
+                            </svg>
+                        </button>
                         <button class="send-btn" id="sendBtn" disabled>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -778,6 +845,8 @@
         // Estado
         let isDark = localStorage.getItem('theme') === 'dark';
         let isTyping = false;
+        let isListening = false;
+        let recognition = null;
 
         // Elementos
         const landing = document.getElementById('landing');
@@ -791,12 +860,74 @@
         const themeToggle = document.getElementById('themeToggle');
         const suggestions = document.getElementById('suggestions');
         const attachBtn = document.getElementById('attachBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
 
         // Inicialização
         function init() {
             applyTheme();
             setupEventListeners();
             autoResizeTextarea();
+            initVoiceRecognition();
+        }
+
+        // Voice Recognition
+        function initVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                voiceBtn.style.display = 'none';
+                console.warn('Web Speech API não suportada neste navegador');
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                isListening = true;
+                voiceBtn.classList.add('listening');
+                voiceBtn.title = 'Ouvindo... clique para parar';
+                voiceBtn.querySelector('.mic-icon').style.display = 'none';
+                voiceBtn.querySelector('.mic-slash-icon').style.display = 'block';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+                handleInput();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Erro de reconhecimento de voz:', event.error);
+                if (event.error === 'not-allowed') {
+                    alert('Permissão de microfone negada. Permita o acesso ao microfone nas configurações do navegador.');
+                } else if (event.error === 'no-speech') {
+                    alert('Nenhuma fala detectada. Tente novamente.');
+                }
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                voiceBtn.classList.remove('listening');
+                voiceBtn.title = 'Busca por voz (clique e fale)';
+                voiceBtn.querySelector('.mic-icon').style.display = 'block';
+                voiceBtn.querySelector('.mic-slash-icon').style.display = 'none';
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) return;
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error('Erro ao iniciar reconhecimento:', e);
+                }
+            }
         }
 
         function applyTheme() {
@@ -829,6 +960,9 @@
             attachBtn.addEventListener('click', () => {
                 alert('Funcionalidade de anexo em desenvolvimento');
             });
+
+            // Voice button
+            voiceBtn.addEventListener('click', toggleVoice);
         }
 
         function startChat() {
@@ -958,31 +1092,211 @@
             showTypingIndicator();
 
             // Simulate thinking time
-            const delay = 800 + Math.random() * 1200;
+            const delay = 1000 + Math.random() * 1500;
 
             setTimeout(() => {
                 hideTypingIndicator();
 
-                // Generate contextual response
-                const responses = {
-                    default: "Entendi sua mensagem. Como sou uma versão de demonstração, minha resposta é simulada. Em uma versão completa, eu processaria sua pergunta e daria uma resposta inteligente baseada no contexto.",
-                    code: "Aqui está um exemplo de código:\n\n```javascript\nfunction saudacao(nome) {\n  return `Olá, ${nome}!`;\n}\n\nconsole.log(saudacao('Mundo'));\n```\n\nEste código define uma função que retorna uma saudação personalizada.",
-                    explain: "Vou explicar de forma simples:\n\n**Computação quântica** usa bits quânticos (qubits) que podem estar em múltiplos estados simultaneamente (superposição), diferentemente dos bits clássicos que são apenas 0 ou 1. Isso permite processar certas operações exponencialmente mais rápido.",
-                    email: "Aqui está um modelo de e-mail profissional:\n\n---\n\n**Assunto:** Agendamento de Reunião - [Tópico]\n\nPrezado(a) [Nome],\n\nGostaria de agendar uma reunião para discutir [tópico].\n\n**Datas sugeridas:**\n- [Data 1] às [Horário]\n- [Data 2] às [Horário]\n- [Data 3] às [Horário]\n\nPor favor, confirme a melhor opção ou sugira outro horário.\n\nAtenciosamente,\n[Seu nome]\n---",
-                    debug: "Para ajudar com debug, preciso ver o código. Cole o trecho problemático e me diga:\n1. Qual erro ocorre\n2. O comportamento esperado\n3. O que já tentou\n\nCom isso posso analisar e sugerir correções."
+                // Academic knowledge base with citations
+                const academicResponses = {
+                    default: `Esta é uma demonstração. Para respostas baseadas em literatura acadêmica real, seria necessário integrar com APIs como **Semantic Scholar**, **Crossref**, **PubMed** ou **Google Scholar** via backend.
+
+**Exemplo de como seriam as respostas com citações:**
+
+> "A aprendizagem de máquina supervisionada mostrou eficácia significativa em classificação de imagens médicas, alcançando acurácia de 94,3% em detecção de nódulos pulmonares" (Esteva et al., 2017).
+
+> "Redes neurais profundas (Deep Learning) revolucionaram o processamento de linguagem natural, com modelos Transformer alcançando estado da arte em múltiplas tarefas" (Vaswani et al., 2017).
+
+**Para implementação real, recomendo:**
+1. **Semantic Scholar API** - busca gratuita, 100 req/5min
+2. **Crossref API** - metadados de DOI, sem chave necessária
+3. **PubMed/Entrez API** - biomédico, requer chave NCBI
+4. **OpenAlex API** - sucessor do Microsoft Academic, gratuito
+
+Gostaria que eu detalhe como integrar alguma dessas APIs?`,
+
+                    quantum: `**Computação Quântica - Fundamentos e Aplicações Atuais**
+
+**Superposição e Emaranhamento:**
+Qubits diferenciam-se de bits clássicos por poderem existir em superposição de estados |0⟩ e |1⟩ simultaneamente (Nielsen & Chuang, 2010). O emaranhamento quântico permite correlações não-locais entre qubits, base para algoritmos quânticos.
+
+**Algoritmos Principais:**
+- **Shor (1994)**: Fatoração em tempo polinomial, ameaça RSA/ECC
+- **Grover (1996)**: Busca não-estruturada com speedup quadrático O(√N)
+- **VQE (Peruzzo et al., 2014)**: Algoritmo variacional para química quântica (NISQ)
+
+**Estado da Arte (2023-2024):**
+- IBM Condor: 1.121 qubits supercondutores (Gambetta et al., 2023)
+- Google Sycamore: 70 qubits, demonstração de supremacia quântica (Arute et al., 2019)
+- Correção de erro: Google demonstrou qubit lógico abaixo do limiar de erro (2023)
+
+**Limitações atuais:** Decoerência (~100μs), ruído de porta (~0.1-1%), conectividade limitada.
+
+**Referências-chave:**
+- Nielsen & Chuang (2010) - "Quantum Computation and Quantum Information"
+- Preskill (2018) - "Quantum Computing in the NISQ era and beyond" (arXiv:1801.00862)
+- Arute et al. (2019) - "Quantum supremacy using a programmable superconducting processor" (Nature)`,
+
+                    ml: `**Aprendizagem de Máquina - Panorama Acadêmico Atual**
+
+**Deep Learning Fundamentals:**
+Redes neurais profundas baseiam-se na aproximação universal de funções (Cybenko, 1989; Hornik, 1991). O backpropagation (Rumelhart et al., 1986) permite treinamento eficiente.
+
+**Arquiteturas Estado da Arte:**
+- **Transformers** (Vaswani et al., 2017): Atenção multi-cabeça, base para LLMs
+- **BERT** (Devlin et al., 2019): Pré-treinamento bidirecional, 340M parâmetros
+- **GPT-3/4** (Brown et al., 2020; OpenAI, 2023): Few-shot learning, escala massiva
+- **Vision Transformers** (Dosovitskiy et al., 2021): Atenção em patches de imagem
+
+**Treinamento e Otimização:**
+- Adam/AdamW (Kingma & Ba, 2015; Loshchilov & Hutter, 2019) - otimizadores padrão
+- Learning rate scheduling: cosine annealing (Loshchilov & Hutter, 2017)
+- Mixed precision training (Micikevicius et al., 2018) - redução 2x memória
+
+**Benchmarks Recentes (2023-2024):**
+- MMLU: GPT-4 86.4%, Claude-3 Opus 86.8% (Hendrycks et al., 2021)
+- HumanEval: GPT-4 67%, CodeLLaMA-34B 67.6% (Chen et al., 2021)
+- ImageNet: CoCa 91.0% top-1 (Yu et al., 2022)
+
+**Referências essenciais:**
+- Goodfellow, Bengio & Courville (2016) - "Deep Learning" (MIT Press)
+- Sutton & Barto (2018) - "Reinforcement Learning: An Introduction" (2nd ed.)
+- Hochreiter & Schmidhuber (1997) - "Long Short-Term Memory" (Neural Computation)`,
+
+                    medical: `**IA em Medicina - Evidência Científica Atual**
+
+**Diagnóstico por Imagem:**
+- **Radiologia**: CNNs superam radiologistas em detecção de nódulos pulmonares (AUC 0.94 vs 0.88) - Ardila et al. (2019, Nature Medicine)
+- **Dermatologia**: Classificação de câncer de pele nível dermatologista - Esteva et al. (2017, Nature)
+- **Oftalmologia**: Detecção de retinopatia diabética FDA-aprovado (IDx-DR) - Abràmoff et al. (2018, NPJ Digital Medicine)
+
+**Descoberta de Fármacos:**
+- **AlphaFold2** (Jumper et al., 2021, Nature): Previsão de estrutura proteica, CASP14 GDT-TS 92.4
+- **Moléculas geradas por IA**: Primeira droga IA (DSP-1181) em ensaio clínico (2020) - Exscientia/Sumitomo
+- **Screening virtual**: Bilhões de compostos/dia vs milhares tradicional (Sadybekov & Katritch, 2023)
+
+**Medicina de Precisão:**
+- Genômica + ML: Predição de resposta a imunoterapia (Riaz et al., 2017, Cell)
+- Digital Twins: Modelos patient-specific para cardiologia (Gao et al., 2022, Nature Reviews Cardiology)
+
+**Desafios Éticos/Regulatórios:**
+- Viés algorítmico: Desempenho inferior em minorias (Obermeyer et al., 2019, Science)
+- Explicabilidade: Requisito FDA/EMA para dispositivos médicos de alto risco
+- Validação externa: <10% estudos validados em múltiplos centros (Liu et al., 2021, Lancet Digital Health)
+
+**Referências-chave:**
+- Topol (2019) - "High-performance medicine: the convergence of human and artificial intelligence" (Nature Medicine)
+- Rajpurkar et al. (2022) - "AI in health and medicine" (Nature Medicine)
+- FDA (2021) - "Artificial Intelligence/Machine Learning-Based Software as a Medical Device" Action Plan`,
+
+                    climate: `**Mudanças Climáticas - Consenso Científico e Soluções Baseadas em Evidência**
+
+**Consenso Atual (IPCC AR6, 2021-2023):**
+- Aquecimento inequívoco: +1.1°C desde 1850-1900 (alta confiança)
+- Causa antropogênica: >99% probabilidade (IPCC, 2021)
+- Orçamento de carbono restante para 1.5°C: ~380 GtCO₂ (50% probabilidade) - Canadell et al. (2021)
+
+**Tecnologias de Mitigação (Custo-Efetividade):**
+1. **Solar/Eólica**: LCOE <$0.05/kWh, já mais barato que carvão/gás (IRENA, 2023)
+2. **Baterias Li-ion**: Queda 89% custo 2010-2022 (BloombergNEF, 2023)
+3. **Hidrogênio verde**: Potencial para setores hard-to-abate (aço, cimento, navegação) - IEA (2022)
+4. **CCUS**: Necessário para emissões residuais, mas caro ($50-200/tCO₂) - IPCC (2022)
+
+**Soluções Baseadas na Natureza (NbS):**
+- Reflorestamento: Potencial 3-18 GtCO₂/ano (Griscom et al., 2017, PNAS)
+- Restauração de manguezais/turfeiras: Alta densidade de carbono
+- **Limitação**: Não substitui descarbonização de energia/indústria (Seddon et al., 2021)
+
+**Adaptação e Resiliência:**
+- Alerta precoce: Retorno $1:$10 em danos evitados (Global Commission on Adaptation, 2019)
+- Infraestrutura resiliente: Benefício $4:$1 (Hallegatte et al., 2019, World Bank)
+
+**Referências fundamentais:**
+- IPCC (2021-2023) - Sixth Assessment Report (WG I, II, III)
+- Rockström et al. (2009/2023) - "Planetary boundaries" (Nature/Science)
+- Rogelj et al. (2018) - "Mitigation pathways compatible with 1.5°C" (IPCC SR15)
+- IEA (2023) - "Net Zero Roadmap: A Global Pathway to Keep the 1.5°C Goal in Reach"`,
+
+                    economics: `**Economia do Desenvolvimento e Políticas Baseadas em Evidência**
+
+**Crescimento e Desigualdade:**
+- **Curva de Kuznets invertida**: Desigualdade primeiro aumenta, depois diminui com desenvolvimento (controverso) - Kuznets (1955); Milanovic (2016)
+- **Capital no século XXI**: r > g leva a concentração de riqueza (Piketty, 2014)
+- **Mobilidade intergeracional**: "Great Gatsby Curve" - alta desigualdade = baixa mobilidade (Krueger, 2012; Corak, 2013)
+
+**Políticas Comprovadas (RCTs e Quasi-Experimentos):**
+1. **Transferências de renda condicionadas** (Bolsa Família/Progresa): Redução pobreza, aumento escolarização - Gertler (2004); Fiszbein & Schady (2009)
+2. **Educação infantil**: Perry Preschool - ROI 7-10% ao ano, efeitos vida toda - Heckman et al. (2010)
+3. **Microfinanças**: Efeitos modestos médios, heterogeneidade alta - Banerjee et al. (2015); Meager (2019)
+4. **Desparasitação escolar**: Custo-efetividade extrema ($3.50/ano de vida saudável) - Miguel & Kremer (2004)
+
+**Desenvolvimento Institucional:**
+- **Instituições inclusivas vs extrativas**: Base do desenvolvimento de longo prazo (Acemoglu & Robinson, 2012)
+- **Estado de direito, propriedade intelectual, controle de corrupção**: Pré-condições (Kaufmann et al., 2010)
+- **Industrialização verde**: Políticas ativas + abertura seletiva (Rodrik, 2014; Juhász et al., 2023)
+
+**Métricas Além do PIB:**
+- IDH (PNUD), Índice de Progresso Social, Bem-estar subjetivo (OECD Better Life Index)
+- Contabilidade de capital natural (SEEA UN, 2021)
+
+**Referências essenciais:**
+- Banerjee & Duflo (2019) - "Good Economics for Hard Times" (Nobel 2019)
+- Acemoglu & Robinson (2012) - "Why Nations Fail"
+- Piketty (2014) - "Capital in the Twenty-First Century"
+- Duflo (2017) - "Richard T. Ely Lecture: The Economist as Plumber" (AER)
+- World Bank (2023) - "World Development Report" annual series`,
+
+                    psychology: `**Psicologia Científica - Descobertas Replicadas e Aplicações**
+
+**Ciência Cognitiva e Tomada de Decisão:**
+- **Sistema 1 vs Sistema 2**: Pensamento rápido/intuitivo vs lento/deliberado (Kahneman, 2011)
+- **Vieses cognitivos replicados**: Ancoragem, disponibilidade, confirmação, excesso de confiança (Kahneman & Tversky, 1974; 2021 replication)
+- **Nudge theory**: Arquitetura de escolha melhora decisões sem restringir liberdade (Thaler & Sunstein, 2008)
+
+**Saúde Mental - Tratamentos Baseados em Evidência:**
+- **TCC (Terapia Cognitivo-Comportamental)**: Padrão-ouro para ansiedade, depressão, PTSD (Hofmann et al., 2012, meta-análise)
+- **ACT (Terapia de Aceitação e Compromisso)**: Eficaz para dor crônica, ansiedade (Gloster et al., 2020)
+- **EMDR**: Específico para PTSD, comparável à TCC (Bisson et al., 2013, Cochrane)
+- **Psicofarmacologia**: ISRS + TCC > isolado para depressão moderada-grave (Cuijpers et al., 2020)
+
+**Psicologia Positiva e Bem-Estar:**
+- **PERMA Model**: Emoções positivas, Engajamento, Relacionamentos, Significado, Realização (Seligman, 2011)
+- **Gratidão, mindfulness, atos de bondade**: Intervenções replicadas (Sin & Lyubomirsky, 2009; meta-análise 2023)
+- **Flow state**: Condições para performance ótima (Csikszentmihalyi, 1990)
+
+**Desenvolvimento e Personalidade:**
+- **Big Five**: Modelo robusto, prediz outcomes vida (Roberts et al., 2007)
+- **Mindset de crescimento**: Intervenções breves melhoram desempenho acadêmico (Yeager & Dweck, 2020, Nature)
+- **Autodeterminação**: Autonomia, competência, relacionamento = motivação intrínseca (Deci & Ryan, 2000)
+
+**Crise de Reprodutibilidade:**
+- Open Science Collaboration (2015): 36% replicação em psicologia
+- Soluções: Pré-registro, registered reports, amostras maiores, open data (Nosek et al., 2022)
+
+**Referências fundamentais:**
+- Kahneman (2011) - "Thinking, Fast and Slow"
+- Hofmann, Asnaani, Vonk, Sawyer & Fang (2012) - "The efficacy of CBT" (Cognitive Therapy and Research)
+- Seligman (2011) - "Flourish"
+- Open Science Collaboration (2015) - "Estimating the reproducibility of psychological science" (Science)
+- Nosek et al. (2022) - "Scientific Utopia: Openness, Reproducibility, and Rigor" (Annual Review of Psychology)`
                 };
 
-                let response = responses.default;
+                let response = academicResponses.default;
                 const lower = userMessage.toLowerCase();
 
-                if (lower.includes('código') || lower.includes('code') || lower.includes('program') || lower.includes('javascript') || lower.includes('python')) {
-                    response = responses.code;
-                } else if (lower.includes('explic') || lower.includes('o que é') || lower.includes('como funciona') || lower.includes('quântic')) {
-                    response = responses.explain;
-                } else if (lower.includes('e-mail') || lower.includes('email') || lower.includes('mensagem')) {
-                    response = responses.email;
-                } else if (lower.includes('depurar') || lower.includes('debug') || lower.includes('erro') || lower.includes('bug') || lower.includes('não funciona')) {
-                    response = responses.debug;
+                // Match keywords to academic topics
+                if (lower.includes('quântic') || lower.includes('quantum') || lower.includes('qubit') || lower.includes('superposi') || lower.includes('emaranh')) {
+                    response = academicResponses.quantum;
+                } else if (lower.includes('machine learning') || lower.includes('aprendiz') || lower.includes('deep learning') || lower.includes('rede neural') || lower.includes('transformer') || lower.includes('llm') || lower.includes('gpt') || lower.includes('bert')) {
+                    response = academicResponses.ml;
+                } else if (lower.includes('medicin') || lower.includes('saúde') || lower.includes('diagnóstic') || lower.includes('fármaco') || lower.includes('drug') || lower.includes('alfafold') || lower.includes('clinical') || lower.includes('hospital')) {
+                    response = academicResponses.medical;
+                } else if (lower.includes('clima') || lower.includes('climate') || lower.includes('aquecimento') || lower.includes('carbono') || lower.includes('emissão') || lower.includes('ipcc') || lower.includes('sustentab') || lower.includes('energia renovável') || lower.includes('solar') || lower.includes('eólica')) {
+                    response = academicResponses.climate;
+                } else if (lower.includes('economi') || lower.includes('desenvolvimento') || lower.includes('desigualdad') || lower.includes('pobreza') || lower.includes('pib') || lower.includes('crescimento') || lower.includes('política públic') || lower.includes('transferênc')) {
+                    response = academicResponses.economics;
+                } else if (lower.includes('psicolog') || lower.includes('comportament') || lower.includes('cognitiv') || lower.includes('decisão') || lower.includes('vies') || lower.includes('ansiedade') || lower.includes('depressão') || lower.includes('terapia') || lower.includes('bem-estar') || lower.includes('mindset') || lower.includes('personalidad')) {
+                    response = academicResponses.psychology;
                 }
 
                 addMessage(response, 'assistant');
