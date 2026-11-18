@@ -15,33 +15,53 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f7f7f8;
-            --bg-tertiary: #ececf1;
-            --text-primary: #1a1a1b;
-            --text-secondary: #565869;
-            --accent: #10a37f;
-            --accent-hover: #0d9473;
-            --border: #e5e5e7;
-            --shadow: rgba(0, 0, 0, 0.08);
-            --user-msg: #10a37f;
-            --assistant-msg: #ffffff;
-            --code-bg: #f4f4f4;
+            --navy: #0a1628;
+            --navy-light: #132444;
+            --navy-lighter: #1e3a5f;
+            --red: #dc2626;
+            --red-hover: #b91c1c;
+            --red-light: #fee2e2;
+            --white: #ffffff;
+            --black: #000000;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+
+            --bg-primary: var(--white);
+            --bg-secondary: var(--gray-100);
+            --bg-tertiary: var(--gray-200);
+            --text-primary: var(--navy);
+            --text-secondary: var(--gray-600);
+            --accent: var(--red);
+            --accent-hover: var(--red-hover);
+            --accent-bg: var(--red-light);
+            --border: var(--gray-200);
+            --shadow: rgba(10, 22, 40, 0.1);
+            --shadow-strong: rgba(10, 22, 40, 0.2);
+            --user-msg: var(--navy);
+            --assistant-msg: var(--white);
+            --code-bg: var(--gray-100);
         }
 
         [data-theme="dark"] {
-            --bg-primary: #212121;
-            --bg-secondary: #2d2d2d;
-            --bg-tertiary: #343541;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --accent: #10a37f;
-            --accent-hover: #14b889;
-            --border: #444444;
+            --bg-primary: var(--navy);
+            --bg-secondary: var(--navy-light);
+            --bg-tertiary: var(--navy-lighter);
+            --text-primary: var(--white);
+            --text-secondary: var(--gray-300);
+            --accent: var(--red);
+            --accent-hover: #ef4444;
+            --accent-bg: rgba(220, 38, 38, 0.15);
+            --border: var(--navy-lighter);
             --shadow: rgba(0, 0, 0, 0.3);
-            --user-msg: #10a37f;
-            --assistant-msg: #444654;
-            --code-bg: #2d2d2d;
+            --shadow-strong: rgba(0, 0, 0, 0.5);
+            --user-msg: var(--red);
+            --assistant-msg: var(--navy-light);
+            --code-bg: var(--navy);
         }
 
         body {
@@ -70,12 +90,12 @@
             width: 140px;
             height: 140px;
             border-radius: 24px;
-            background: linear-gradient(135deg, var(--accent) 0%, #0d9473 100%);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--red) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(16, 163, 127, 0.3);
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
             animation: float 3s ease-in-out infinite;
         }
 
@@ -121,18 +141,17 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: white;
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
             border: none;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 16px rgba(16, 163, 127, 0.4);
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
         }
 
         .btn-start:hover {
-            background: var(--accent-hover);
             transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(16, 163, 127, 0.5);
+            box-shadow: 0 6px 24px rgba(220, 38, 38, 0.5);
         }
 
         .btn-start:active {
@@ -175,7 +194,7 @@
             width: 36px;
             height: 36px;
             border-radius: 8px;
-            background: linear-gradient(135deg, var(--accent) 0%, #0d9473 100%);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--red) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -257,12 +276,12 @@
             width: 80px;
             height: 80px;
             border-radius: 16px;
-            background: linear-gradient(135deg, var(--accent) 0%, #0d9473 100%);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--red) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 20px rgba(16, 163, 127, 0.3);
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
         }
 
         .welcome-logo img {
@@ -311,7 +330,7 @@
 
         .suggestion-card:hover {
             border-color: var(--accent);
-            box-shadow: 0 4px 16px var(--shadow);
+            box-shadow: 0 4px 16px var(--shadow-strong);
             transform: translateY(-2px);
         }
 
@@ -501,7 +520,7 @@
         .typing-dots span {
             width: 6px;
             height: 6px;
-            background: var(--text-secondary);
+            background: var(--accent);
             border-radius: 50%;
             animation: typing 1.4s ease-in-out infinite;
         }
@@ -561,7 +580,7 @@
 
         #messageInput:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.15);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
         }
 
         #messageInput::placeholder {
