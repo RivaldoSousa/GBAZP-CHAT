@@ -1255,7 +1255,6 @@
             sendBtn.disabled = true;
             showTypingIndicator();
 
-            // Simulate thinking time
             const delay = 800 + Math.random() * 1200;
 
             setTimeout(() => {
@@ -1266,154 +1265,98 @@
 
                 // ENGENHARIA AGRÍCOLA & AMBIÊNCIA
                 if (lower.includes('ventila') || lower.includes('climatiza') || lower.includes('ambiênc') || lower.includes('estresse térmico') || lower.includes('conforto térmico') || lower.includes('temperatura') || lower.includes('umidade') || lower.includes('galpão') || lower.includes('instalaç') || lower.includes('exaustor') || lower.includes('ventilador') || lower.includes('resfriamento') || lower.includes('nebuliza') || lower.includes('aspers') || lower.includes('cortina') || lower.includes('inlet') || lower.includes('energia') || lower.includes('inversor')) {
-                    response = `Olha, vou te falar direto como se estivesse na sua granja: **ventilação bem feita é o que mais dá retorno** — e a ciência confirma.
+                    response = `**Solução direta pro seu galpão:**
 
-**O que a pesquisa mostra de mais efetivo:**
+1. **Meça primeiro** — 3 termômetros min/max (R$ 30 cada): entrada, centro, saída. Anote 7 dias.
+2. **Se Δ entrada→saída > 3°C** → fluxo ruim. Ajuste inlets/cortinas antes de comprar equipamento.
+3. **Alvo de velocidade no bico/focinho:** frango terminação 2,5–3,5 m/s | suíno crescimento 1,5–2,0 m/s.
+4. **Curva rápida (frango corte):** 1–7d 33°C | 8–14d 30°C | 15–21d 27°C | 22–35d 24°C | 36+d 21°C.
+5. **Economia real:** inversores de frequência nos ventiladores cortam 30–40% energia (payback ~1 ano).
+6. **Resfriamento:** painel evaporativo + nebulização baixa 4–6°C efetivos. **Regra:** UR ≤ 75% senão piora.
 
-1. **Ventilação por etapas com inversores de frequência** — reduz 30-40% no consumo de energia vs. ventiladores ligados/desligados (Embrapa Suínos e Aves, 2023; Zhang et al., 2022).
+**Comece hoje:** termômetros + anotação. Em 1 semana você sabe exatamente onde mexer.
 
-2. **Resfriamento evaporativo (painéis + nebulização)** — em clima quente úmido, baixa 4-6°C a temperatura efetiva sentida pelos animais. O segredo: umidade relativa não passar de 75% (Czarick & Lacy, Universidade da Geórgia, 2021; Tinôco et al., USP/ESALQ, 2020).
+---
 
-3. **Velocidade do ar na altura do animal** — meta: **2,5 a 3,5 m/s** para frangos de corte em terminação; **1,5 a 2,0 m/s** para suínos em crescimento. Medir no nível do bico/focinho, não no teto (Yanagi Jr. et al., 2022; Embrapa, 2023).
-
-4. **Curva de temperatura ideal por fase** (frango de corte, Cobb/Ross, 2022):
-   - 1-7 dias: 32-33°C
-   - 8-14 dias: 29-30°C
-   - 15-21 dias: 26-27°C
-   - 22-35 dias: 22-24°C
-   - 36+ dias: 20-22°C
-
-**Na prática, por onde começar hoje:**
-- Compre 3 termômetros min/max (R$ 30 cada) e coloque: entrada de ar, centro, saída. Anote por 7 dias.
-- Se a diferença entre entrada e saída > 3°C → seu fluxo de ar tá ruim.
-- Cortinas laterais: abra 100% no dia, feche 50% à noite no frio. Simples e resolve muito.
-
-**Referências-chave:** Embrapa Suínos e Aves (2023), Czarick & Lacy UGA (2021), Tinôco et al. USP/ESALQ (2020), Yanagi Jr. et al. (2022), Zhang et al. (2022).`;
+*Base: Embrapa Suínos e Aves (2023), Czarick & Lacy UGA (2021), Tinôco USP/ESALQ (2020), Yanagi Jr. et al. (2022), Cobb/Ross (2022), Zhang et al. (2022).*`;
                 }
                 // BEM-ESTAR ANIMAL
                 else if (lower.includes('bem-estar') || lower.includes('bem estar') || lower.includes('welfare') || lower.includes('comportamento') || lower.includes('indicador') || lower.includes('protocolo') || lower.includes('enriquecimento') || lower.includes('densidade') || lower.includes('les') || lower.includes('claudica') || lower.includes('condição corporal') || lower.includes('manejo humanizado') || lower.includes('desmame') || lower.includes('transporte') || lower.includes('abate') || lower.includes('eutanasia') || lower.includes('certifica') || lower.includes('auditoria')) {
-                    response = `Bem-estar não é "luxo" — **é rentabilidade**. Animais sem estresse comem melhor, convertem melhor, adoecem menos. A ciência tá clara:
+                    response = `**Checklist prático de bem-estar (15 min/semana):**
 
-**Protocolos que valem a pena adotar (ordem de impacto):**
+**O que olhar "olho no olho":**
+- **Suínos:** lesões cauda/orelha >15% = ação | claudicação | escore condição 1–5 | fuçam substrato?
+- **Aves:** bicar penas >5% = alerta | dermatite pata/peito | andar | vocalização estresse
+- **Bovinos:** locomoção 1–5 | lesões corpo | limpeza | comportamento cocho
 
-1. **Welfare Quality® adaptado Brasil** — 4 princípios: boa alimentação, bom alojamento, boa saúde, comportamento apropriado. Embrapa validou para suínos e aves (2022). Dá nota de 0 a 100 por granja.
+**Densidades máximas (evidência 2022/23):**
+- Frango: 33–35 kg/m² (controlado) / 28–30 kg/m² (aberto)
+- Suíno terminação: 0,9–1,0 m²/animal (100–120 kg)
+- Bovino confinamento: 12–15 m²/animal + sombreamento
 
-2. **Indicadores "olho no olho" (faça toda semana, 15 min):**
-   - **Suínos:** lesões de cauda/orelha (>15% = problema), claudicação (andar mancando), condição corporal (escala 1-5), comportamento de explorar (fuçar substrato).
-   - **Aves:** plumagem (bicar penas >5% = alerta), dermatite de contato (pata/peito), andar, vocalização de estresse.
-   - **Bovinos:** escore de locomoção (1-5), lesões de corpo, limpeza, comportamento no cocho.
+**Enriquecimento barato que funciona:**
+- Suínos: corrente com nó, madeira, corda, palha/serragem — **R$ 0,50/leitegado**
+- Aves: fardos palha, plataformas, objetos pendurados — **−40–60% bicagem**
 
-3. **Enriquecimento que funciona e é barato:**
-   - Suínos: corrente com nó, madeira não tratada, corda, substrato (palha/serragem) — R$ 0,50/leitegado (MAPA/Embrapa, 2023).
-   - Aves: fardos de palha, plataformas, objetos pendurados — reduz bicagem em 40-60% (Tahamtani et al., 2021).
+**Prova pra auditoria/certificação:** filme 2 min/dia no celular (mesmo horário). Em 30 dias tem vídeo-prova.
 
-4. **Densidade máxima baseada em evidência (2022/2023):**
-   - Frango corte: **33-35 kg/m²** (clima controlado) / **28-30 kg/m²** (clima aberto)
-   - Suínos terminação: **0,9-1,0 m²/animal** (100-120 kg)
-   - Bovinos confinamento: **12-15 m²/animal** com sombreamento
+---
 
-**Dica de ouro:** filme com celular 2 min/dia no mesmo horário. Em 30 dias você tem provas visuais pra auditoria, certificação (Certified Humane, Global GAP) e pra conversar com técnico/veterinário.
-
-**Referências:** Welfare Quality® Brasil/Embrapa (2022), MAPA IN 113/2020, Tahamtani et al. (2021), CONCEA (2023), AVMA Guidelines (2020/2023).`;
+*Base: Welfare Quality® Brasil/Embrapa (2022), MAPA IN 113/2020, Tahamtani et al. (2021), CONCEA (2023), AVMA (2020/23).*`;
                 }
                 // TECNOLOGIAS PARA PRODUÇÃO & MANEJO
                 else if (lower.includes('sensor') || lower.includes('iot') || lower.includes('inteligência artificial') || lower.includes('ia') || lower.includes('monitoramento') || lower.includes('precisão') || lower.includes('precisao') || lower.includes('câmera') || lower.includes('camera') || lower.includes('visão computacional') || lower.includes('visao computacional') || lower.includes('peso automático') || lower.includes('peso automatico') || lower.includes('rfid') || lower.includes('uhf') || lower.includes('rastreabilidade') || lower.includes('dashboard') || lower.includes('alerta') || lower.includes('whatsapp') || lower.includes('telegram') || lower.includes('robótica') || lower.includes('robotica') || lower.includes('retrofit') || lower.includes('controlador climático') || lower.includes('controlador climatic')) {
-                    response = `Tecnologia na granja **não é comprar "fazenda inteligente" pronta** — é resolver *um* problema de cada vez com dado na mão. O que realmente entrega ROI:
+                    response = `**Roteiro tecnológico por ROI (comece pelo 1):**
 
-**Comece aqui (baixo custo, alto impacto):**
+1. **Temp/UR por setor + alerta WhatsApp** — R$ 200–400/setor (ESP32 + DHT22/AM2302). Detecta falha ventilador em **3 min** vs 2–4h no olho. **Payback: 1 lote.** (Embrapa 2023)
+2. **Balança automática (passagem/plataforma)** — amostra 10–20% lote/dia sem manejo. Ajusta ração, prevê abate, detecta doença **3–5 dias antes**. R$ 8–15 mil → retorno 2–3 lotes. (Rutten 2021, Embrapa 2022)
+3. **Medidor água/ração por linha** — sensor fluxo ultrassônico R$ 300–600. Vazamento bebedouro = prejuízo invisível. **Paga no 1º mês.** (Embrapa 2023)
 
-1. **Temperatura/umidade por setor + alerta no WhatsApp** — R$ 200-400/setor (ESP32 + DHT22/AM2302 + chip SIM ou Wi-Fi). Embrapa testou: detecta falha de ventilador em 3 min vs. 2-4 horas no olho humano (2023). **Payback: 1 lote.**
+**Depois de 30–60 dias de dado, evolua:**
+4. **Câmera + IA (YOLOv8 + Raspberry Pi < R$ 2.000)** — aglomeração, aves caídas, comportamento. 92% acurácia vs humano. (Dorea 2022, Neves USP 2023)
+5. **Microfone + IA tosse** — alerta bronquite **48h antes** sintomas. (Guarino 2021, Silva UFV 2022)
+6. **RFID/UHF individual** — rastreabilidade nascimento→abate. Obrigatório exportação EU/China. (MAPA 2023)
 
-2. **Balança automática de pesagem (passagem ou plataforma)** — amostra 10-20% do lote/dia sem manejo. Ajusta ração, prevê abate, detecta doença 3-5 dias antes (Rutten et al., 2021; Embrapa, 2022). Custo: R$ 8-15 mil; retorno em 2-3 lotes.
+**Regra de ouro:** não compre sistema que **não exporta SEUS dados (CSV/JSON)**. Caixa preta de fornecedor = você refém.
 
-3. **Medidor de água/ração por linha** — vazamento de bebedouro = prejuízo invisível. Sensor de fluxo ultrassônico (R$ 300-600) paga sozinho no 1º mês (Dados Embrapa Suínos e Aves, 2023).
+---
 
-**Depois que tem dado (30-60 dias), evolua:**
-
-4. **Câmera + IA para contagem/comportamento** — detecta aglomeração (frio/calor), lambeção excessiva, aves caídas. Sistemas: Fancom, Big Dutchman, ou open-source (YOLOv8 + Raspberry Pi, custo < R$ 2.000/câmera). Validado: 92% acurácia vs. observador humano (Dorea et al., 2022; Neves et al., USP, 2023).
-
-5. **Microfone + IA para tosse/vocalização** — alerta de bronquite 48h antes de sintomas clínicos (Guarino et al., 2021; Silva et al., UFV, 2022).
-
-6. **RFID/UHF individual** — rastreabilidade do nascimento ao abate. Exige leitor no cocho/bebedouro. Obrigatório pra exportação EU/China (MAPA, 2023).
-
-**Regra de ouro:** **não compre sistema que não deixa você exportar SEUS dados em CSV/JSON**. Evite "caixa preta" de fornecedor. Dado é seu ativo.
-
-**Referências:** Embrapa Suínos e Aves (2023), Rutten et al. (2021), Dorea et al. (2022), Neves et al. USP (2023), Guarino et al. (2021), Silva et al. UFV (2022), MAPA (2023).`;
+*Base: Embrapa (2023), Rutten et al. (2021), Dorea et al. (2022), Neves USP (2023), Guarino et al. (2021), Silva UFV (2022), MAPA (2023).*`;
                 }
                 // CARTILHAS TÉCNICAS
                 else if (lower.includes('cartilha') || lower.includes('manual') || lower.includes('guia') || lower.includes('checklist') || lower.includes('estrutura') || lower.includes('como fazer') || lower.includes('passo a passo') || lower.includes('implementação') || lower.includes('implementacao') || lower.includes('referência') || lower.includes('referencia') || lower.includes('linguagem simples') || lower.includes('acessível') || lower.includes('acessivel')) {
-                    response = `Cartilha boa **não é apostila de faculdade** — é manual de bolso que o funcionário usa *na hora* da dúvida. Estrutura que funciona (testada com produtores Embrapa/SENAR, 2022/2023):
+                    response = `**Estrutura de cartilha que o funcionário USA (testada Embrapa/SENAR 2022/23):**
 
-**Modelo pronto pra você adaptar:**
+1. **Capa:** título direto + logo + versão + QR pro PDF
+2. **Sumário visual (1 pág, ícones):** 6 passos máx.
+3. **"Por que importa" (3 parágrafos):** ex.: "1°C acima = 5g menos ração/dia = 150g abate = R$ 19,5 mil/lote de 20k aves"
+4. **Analogias:** "Inlet = janela do carro | Inversor = marcha"
+5. **Passo a passo COM SUAS FOTOS** (setas, círculos vermelhos no seu painel)
+6. **Tabela laminada na parede:** fase × temp × UR × vel. ar × % ventiladores
+7. **Checklist HOJE/SEMANA/MÊS** (☐ medir 3 pts | ☐ limpar painéis | ☐ calibrar sensores)
+8. **FAQ real:** "Quente mas ventilador ligado?" → inlets? cortinas? painéis? filtros?
+9. **Referências essenciais (4 máx.):** Embrapa, guia genético, MAPA, seu técnico (nome/WhatsApp)
+10. **Contatos:** técnico, vet, fornecedor (vendedor que atende), Embrapa/SENAR regional
 
----
-
-**CAPA:** Título direto (*"Ventilação Eficiente: Economize 30% de Energia no Galpão de Frangos"*), seu logo, versão, mês/ano, QR code pro PDF online.
-
-**SUMÁRIO VISUAL** (1 página, ícones):
-1. 🌡️ Por que temperatura importa → 2. 📏 O que medir → 3. ⚙️ Equipar certo → 4. 📋 Rotina diária → 5. 🚨 Se der problema → 6. 📞 Contatos
-
-**"POR QUE ISSO IMPORTA" (máx. 3 parágrafos):**
-> "Frango com calor come menos. 1°C acima do ideal = 5g menos de ração/dia = 150g a menos no abate. No seu lote de 20.000 aves = 3 toneladas de peso a menos. A R$ 6,50/kg = **R$ 19.500/lote no bolso**."
-*(Base: Cobb-Vantress Nutrient Specs 2022; Embrapa 2023)*
-
-**CONCEITOS-CHAVE COM ANALOGIAS:**
-- "Inlet de ar = janela do carro. Fechada = calor. Aberta demais = vento na cara. Ajuste fino = conforto."
-- "Inversor = marcha do carro. Não acelera e freia toda hora — mantém velocidade suave, gasta menos combustível."
-
-**PASSO A PASSO ILUSTRADO** (fotos SUAS, setas, círculos vermelhos):
-- Foto do seu controlador: "Aperte MENU → VENTILAÇÃO → CURVA → SELECIONE FASE"
-- Foto do termômetro: "Coloque AQUI (altura do bico), NÃO aqui (teto)"
-
-**TABELA DE REFERÊNCIA RÁPIDA** (lamine e cole na parede do galpão):
-| Fase | Temp. Ideal | Umidade | Vel. Ar | Ventiladores |
-|------|-------------|---------|---------|--------------|
-| 1-7d | 33°C | 60-65% | 0,5 m/s | Mínimo 10% |
-| ... | ... | ... | ... | ... |
-
-**CHECKLIST: "O QUE FAZER HOJE / SEMANA / MÊS"**
-☐ Hoje: Medir temp. 3 pontos, anotar no caderno/WhatsApp
-☐ Semana: Limpar painéis evaporativos, checar correias
-☐ Mês: Calibrar sensores, testar alarmes, backup dados
-
-**SOLUÇÃO DE PROBLEMAS (FAQ real):**
-> **"Galpão quente mas ventiladores ligados?"** → Verifique: inlets abertos? Cortinas? Painéis molhados? Filtros sujos?
-> **"Alarme dispara à noite?"** → Curva noturna mal configurada. Ajuste: -2°C da curva dia.
-
-**REFERÊNCIAS CONFIÁVEIS (só o essencial):**
-- Embrapa Suínos e Aves (2023) - Manual de Climatização
-- Cobb/Ross/Aviagen (2022) - Guias de Manejo
-- MAPA IN 113/2020 - Bem-estar
-- Seu técnico/veterinário de confiança (nome, WhatsApp)
-
-**CONTATOS:** Seu técnico, vet, fornecedor de equipamento (com nome do vendedor que atende bem), Embrapa/SENAR regional.
+**Me manda seu cenário** (o que cria, m², clima, equipe, maior dor) que gero a sua pronta.
 
 ---
 
-**Quer que eu gere a sua?** Me diga: **o que você cria (suínos/aves/bovinos), tamanho da granja, clima da região, tamanho da equipe, maior dor hoje**. Faço sob medida.
-
-**Referências de metodologia:** Embrapa/SENAR (2022/2023) - Cartilhas para Produtores; FAO (2021) - Communication for Rural Development; INEP/MEC (2020) - Linguagem Simples em Materiais Técnicos.`;
+*Base: Embrapa/SENAR Cartilhas Produtores (2022/23), FAO Communication Rural Development (2021), INEP/MEC Linguagem Simples (2020).*`;
                 }
-                // GERAL - boas-vindas / fallback
+                // GERAL
                 else {
-                    response = `Olá! Sou especialista em **engenharia agrícola, ambiência, bem-estar animal, tecnologias de precisão e cartilhas técnicas** — tudo focado no produtor rural brasileiro.
+                    response = `Sou especialista em **engenharia agrícola, ambiência, bem-estar, tecnologias e cartilhas** — focado no produtor brasileiro.
 
-**Como posso te ajudar hoje?** Escolha um tema ou me conta sua situação:
+**Me fala sua situação** (exemplos do dia a dia):
+- "Galpão 1200m² fica 5°C acima à tarde. Resolvo gastando pouco?"
+- "Como avalio bem-estar dos suínos sem auditor externo?"
+- "Sensor temp + alerta WhatsApp. Por onde começo?"
+- "Cartilha manejo creche pra 3 pessoas. Como faço?"
 
-🌡️ **Engenharia & Ambiência** — ventilação, climatização, conforto térmico, economia de energia
-🐷 **Bem-Estar Animal** — protocolos, indicadores, enriquecimento, certificação, manejo humanizado  
-📱 **Tecnologias** — sensores, IoT, IA, pesagem automática, alertas no WhatsApp, retrofit
-📋 **Cartilhas** — manual prático pro seu caso, linguagem simples, checklist, referências
+**Respondo direto:** solução prática → base de pesquisa (ano no final).
 
-**Exemplos do que pergunto todo dia:**
-- "Meu galpão de 1200m² fica 5°C acima do ideal à tarde. O que faço gastando pouco?"
-- "Como avaliar bem-estar dos meus suínos sem contratar auditor externo?"
-- "Quero colocar sensor de temperatura com alerta no celular. Por onde começo?"
-- "Preciso de uma cartilha de manejo de creche pro meu time de 3 pessoas. Como estruturo?"
-
-**Manda sua dúvida direta** — respondo com base em pesquisa real (Embrapa, universidades, normas MAPA, guias genéticos) **ano da publicação no final**, linguagem de produtor pra produtor.
-
-**Referências base:** Embrapa Suínos e Aves (2023), MAPA/IN 113 (2020), Welfare Quality® Brasil (2022), Cobb/Ross/Aviagen (2022), USP/ESALQ/UFV/UFRGS publicações 2020-2023.`;
+*Referências ativas: Embrapa (2023), MAPA (2020), Welfare Quality® Brasil (2022), Cobb/Ross/Aviagen (2022), USP/ESALQ/UFV/UFRGS (2020–23).*`;
                 }
 
                 addMessage(response, 'assistant');
