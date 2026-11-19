@@ -1,12 +1,14 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  farm-animal-3d-web:
+  gbazp-chat:
     build: .
     ports:
       - "5000:5000"
-    volumes:
-      - ./generated:/app/generated
     environment:
-      - FLASK_ENV=production
-    restart: unless-stopped
+      PORT: 5000
+      OPEN_MODEL_BASE_URL: ${OPEN_MODEL_BASE_URL:-http://host.docker.internal:11434/v1}
+      OPEN_MODEL: ${OPEN_MODEL:-qwen2.5:7b}
+      OPEN_MODEL_API_KEY: ${OPEN_MODEL_API_KEY:-}
+      ACADEMIC_SEARCH_TIMEOUT: ${ACADEMIC_SEARCH_TIMEOUT:-12}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -97,3 +97,33 @@ MIT - Use livremente para projetos pessoais, educacionais ou comerciais.
 ## Autor
 
 Desenvolvido para dataloggertiete-hub
+## GBAZP Chat com busca acadêmica e modelo aberto
+
+A interface em `GBAZP-CHAT/index.html` agora usa `academic_chat_api.py` em vez de respostas simuladas. O servidor executa um fluxo RAG: consulta primeiro o [OpenAlex](https://openalex.org/) (diretório acadêmico aberto, com DOI, periódico, autores e instituições), complementa com [Crossref](https://www.crossref.org/) quando necessário e envia somente esse contexto ao modelo local. A resposta mostra links para a fonte original e para o registro OpenAlex.
+
+O modelo não é fixado na aplicação. O padrão é o [Ollama](https://ollama.com/) com `qwen2.5:7b`, mas também funcionam vLLM e LocalAI por serem compatíveis com a API OpenAI:
+
+```bash
+ollama pull qwen2.5:7b
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-chat.txt
+python academic_chat_api.py
+```
+
+Abra `http://localhost:5000`. Para trocar o modelo ou o servidor, copie `.env.example` para `.env` e exporte as variáveis antes de iniciar:
+
+```bash
+export OPEN_MODEL_BASE_URL=http://localhost:11434/v1
+export OPEN_MODEL=qwen2.5:7b
+export OPEN_MODEL_API_KEY=
+python academic_chat_api.py
+```
+
+Com Docker, o Compose já aponta o container para o Ollama no host via `host.docker.internal`:
+
+```bash
+docker compose up --build
+```
+
+Se o modelo estiver indisponível, o sistema não inventa uma resposta: entrega um resumo extrativo das fontes encontradas e informa a falha. Se a busca não encontrar trabalhos verificáveis, informa isso e pede uma consulta mais específica. O endpoint de diagnóstico é `GET /api/health`.
