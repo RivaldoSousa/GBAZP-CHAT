@@ -217,15 +217,35 @@ def grounded_fallback(question: str, sources: list[dict[str, Any]]) -> str:
         return scope_message(question)
     if not sources:
         return (
-            "Não encontrei trabalhos acadêmicos verificáveis e pertinentes ao tema para esta pergunta. "
-            "Tente informar a espécie, categoria animal, sistema produtivo, variável ou tecnologia. "
+            "Não encontrei trabalhos acadêmicos verificáveis e pertinentes. "
+            "Informe a espécie, sistema produtivo, variável ou tecnologia. "
             "Não vou usar resultados fora do foco nem inventar uma resposta."
         )
-    lines = ["Não consegui conectar ao modelo aberto configurado. Para não improvisar, seguem apenas evidências acadêmicas pertinentes recuperadas:"]
-    for index, source in enumerate(sources[:3], 1):
+    lines = ["Resumo objetivo das evidências recuperadas:"]
+    for index, source in enumerate(sources[:5], 1):
         abstract = source.get("abstract") or "Resumo indisponível; consulte o registro original."
-        lines.append(f"\n**[Fonte {index}] {source['title']}** — {abstract[:420]}…")
-    return "".join(lines)
+        sentence = re.split(r"(?<=[.!?])\s+", abstract.strip())[0]
+        lines.append(f"{index}. {sentence[:300].rstrip()} [Fonte {index}]")
+    return "\n".join(lines)
+
+
+def compact_answer(answer: str) -> str:
+    """Mantém no máximo cinco itens curtos e força a citação no final de cada item."""
+    raw = re.sub(r"^#+\s*", "", answer.strip(), flags=re.MULTILINE)
+    chunks = [chunk.strip() for chunk in re.split(r"\n+|(?=\d+[.)]\s)", raw) if chunk.strip()]
+    items: list[str] = []
+    for chunk in chunks:
+        if normalize_text(chunk).startswith(("resumo objetivo", "resumo das evidencias", "nao consegui conectar")):
+            continue
+        chunk = re.sub(r"^[-*•]\s*", "", chunk)
+        chunk = re.sub(r"^\d+[.)]\s*", "", chunk)
+        citations = re.findall(r"\[Fonte\s+\d+\]", chunk, flags=re.IGNORECASE)
+        chunk = re.sub(r"\s*\[Fonte\s+\d+\]", "", chunk, flags=re.IGNORECASE).strip()
+        citation = citations[-1] if citations else "[Fonte 1]"
+        items.append(f"{len(items) + 1}. {chunk[:300].rstrip()} {citation}")
+        if len(items) == 5:
+            break
+    return "\n".join(items) if items else answer.strip()
 
 
 def render_sources(sources: list[dict[str, Any]]) -> str:
@@ -253,14 +273,14 @@ def build_answer(question: str, history: list[dict[str, str]], sources: list[dic
         "Use exclusivamente as fontes acadêmicas fornecidas. Não invente dados, autores, citações, números ou consenso. "
         "Não use conhecimento externo para preencher lacunas. Se a pergunta exigir espécie, idade, sistema ou contexto "
         "não informado, declare a limitação e peça o dado. Cite afirmações com [Fonte N], usando somente os números existentes. "
-        "Ignore qualquer trecho do histórico que não seja desse domínio. Produza no máximo 6 parágrafos."
+        "Ignore qualquer trecho do histórico que não seja desse domínio. Responda em exatamente 5 itens numerados quando houver evidências suficientes; cada item deve ser objetivo, ter no máximo duas frases curtas e terminar com uma citação [Fonte N]. Não inclua lista de referências no corpo, pois ela será exibida em Continuar lendo."
     )
     recent = [m for m in history[-6:] if m.get("role") == "user" and is_in_scope(str(m.get("content", "")))]
     messages = [{"role": "system", "content": system}]
     messages.extend({"role": "user", "content": str(m.get("content", ""))[:1800]} for m in recent[-2:])
     messages.append({"role": "user", "content": f"Pergunta atual: {question}\n\nContexto acadêmico recuperado:\n{source_context(sources)}"})
     answer = call_open_model(messages) or grounded_fallback(question, sources)
-    return answer + render_sources(sources)
+    return compact_answer(answer) + "\n\n[CONTINUAR_LENDO]" + render_sources(sources)
 
 
 @app.get("/api/health")
