@@ -140,6 +140,20 @@
    fonte:'Sousa (2026), Resumo / Cap. 3'
   },
   {
+   id:'k_nutricao',
+   campo:'Ciência da produção animal',
+   titulo:'Nutrição e manejo do rebanho',
+   texto:'A nutrição animal é um dos pilares da produção animal sustentável. O manejo adequado da ração, a disponibilidade de água e o acompanhamento da condição corporal influenciam diretamente o ganho de peso, a reprodução e a sanidade do rebanho. O estresse térmico afeta a ingestão e o metabolismo, por isso a integração com monitoramento ambiental (THI) é relevante.',
+   fonte:'Referência acadêmica — Ciência da Produção Animal / Manejo Nutricional'
+  },
+  {
+   id:'k_reproducao',
+   campo:'Ciência da produção animal',
+   titulo:'Reprodução e sanidade',
+   texto:'A eficiência reprodutiva depende de condições ambientais adequadas, nutrição balanceada e controle sanitário. O estresse térmico pode prejudicar a fertilidade e a resistência a doenças, tornando o monitoramento da ambiência uma ferramenta de apoio à decisão no manejo do rebanho.',
+   fonte:'Referência acadêmica — Reprodução Animal e Sanidade'
+  },
+  {
    id:'k_autdepos',
    campo:'Pós-graduação / procedimento acadêmico',
    titulo:'Ficha de autodeposição',
@@ -250,10 +264,10 @@
    const h=hits.find(k=>k.id==='k_plf')||hits[0];
    return 'Na <strong>bovinocultura de leite</strong> em ambiente tropical, o estresse térmico é constante. A proposta é integrar o monitoramento contínuo da ambiência (THI) a tecnologias de <strong>pecuária de precisão</strong> e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica. <br><br><em>Fonte:</em> '+h.fonte;
   }
-  // --- resposta geral sempre embasada nas fontes acadêmicas centrais ---
-  const central=hits.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria/i.test(k.texto.toLowerCase())).slice(0,3);
-  const linhas=central.map(h=>'• <strong>'+h.titulo+'</strong> — '+h.texto+'. <em>Fonte:</em> '+h.fonte).join('<br>');
-  const ans='Sou um assistente acadêmico embasado nas fontes de pesquisa e nos documentos oficiais de pós-graduação da ESALQ/USP. Mesmo para uma pergunta geral, minha resposta parte da base acadêmica. Os principais conceitos que disponibilizo são:<br>'+linhas+'<br><br>Em que posso ajudar?';
+  // --- resposta geral sempre embasada nas fontes acadêmicas da ciência da produção animal ---
+  const central=hits.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria|nutri|reprodu|ciena|produção animal|sanidade/i.test(k.texto.toLowerCase())).slice(0,4);
+  const linhas=central.map(h=>'• <strong>'+h.titulo+'</strong> ('+h.campo+') — '+h.texto+'. <em>Fonte:</em> '+h.fonte).join('<br>');
+  const ans='Sou um assistente acadêmico embasado em trabalhos de universidades e pesquisas da área de Ciência da Produção Animal (nacionais e internacionais), artigos e revistas científicas. Mesmo para uma pergunta geral, minha resposta parte da base acadêmica. Os principais conceitos que disponibilizo são:<br>'+linhas+'<br><br>Em que posso ajudar?';
   return ans+'<br>'+academicSearchLinks(userMessage);
  }
 /* ============================================================
