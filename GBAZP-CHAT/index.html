@@ -70,6 +70,10 @@
  .thinking-step { margin:.35rem 0; color:var(--text-secondary); }
  .thinking-step .n { color:var(--accent); font-weight:700; margin-right:.4rem; }
  .thinking-step strong { color:var(--text-primary); }
+ .academic-search { margin-top:.6rem; padding:.75rem 1rem; background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; font-size:.85rem; line-height:1.5; }
+ .academic-search strong { color:var(--accent); }
+ .academic-search a { color:var(--accent); text-decoration:underline; }
+ .academic-search a:hover { text-decoration:none; color:var(--accent-hover); }
  .input-area { padding:1.5rem; background:var(--bg-primary); border-top:1px solid var(--border); flex-shrink:0; }
  .input-wrapper { max-width:750px; margin:0 auto; display:flex; flex-direction:column; gap:.75rem; } .input-row{display:flex;gap:.75rem;align-items:flex-end}.textarea-container{flex:1;position:relative}
  #messageInput { width:100%; min-height:52px; max-height:200px; padding:.875rem 1rem; font-family:inherit; font-size:1rem; line-height:1.5; color:var(--text-primary); background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; resize:none; outline:none; transition:all .2s; }
@@ -249,7 +253,30 @@
   // --- resposta geral sempre embasada nas fontes acadêmicas centrais ---
   const central=hits.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria/i.test(k.texto.toLowerCase())).slice(0,3);
   const linhas=central.map(h=>'• <strong>'+h.titulo+'</strong> — '+h.texto+'. <em>Fonte:</em> '+h.fonte).join('<br>');
-  return 'Sou um assistente acadêmico embasado nas fontes de pesquisa e nos documentos oficiais de pós-graduação da ESALQ/USP. Mesmo para uma pergunta geral, minha resposta parte da base acadêmica. Os principais conceitos que disponibilizo são:<br>'+linhas+'<br><br>Em que posso ajudar?';
+  const ans='Sou um assistente acadêmico embasado nas fontes de pesquisa e nos documentos oficiais de pós-graduação da ESALQ/USP. Mesmo para uma pergunta geral, minha resposta parte da base acadêmica. Os principais conceitos que disponibilizo são:<br>'+linhas+'<br><br>Em que posso ajudar?';
+  return ans+'<br>'+academicSearchLinks(userMessage);
+ }
+/* ============================================================
+    BUSCA EM REPOSITÓRIOS ACADÊMICOS EXTERNOS
+    Como o site é estático (GitHub Pages), não consome APIs ao vivo.
+    Esta função monta links de busca prontos nos principais repositórios
+    acadêmicos, para que o usuário possa seguir a pesquisa na fonte original.
+  ============================================================ */
+ function academicSearchLinks(query){
+  const q=encodeURIComponent(query);
+  const links=[
+   {name:'Google Scholar',url:'https://scholar.google.com/scholar?q='+q},
+   {name:'Semantic Scholar',url:'https://www.semanticscholar.org/search?q='+q},
+   {name:'Crossref',url:'https://api.crossref.org/works?query='+q+'&rows=5'},
+   {name:'OpenAlex',url:'https://api.openalex.org/works?search='+q+'&per-page=5'}
+  ];
+  let html='<div class="academic-search"><strong>Buscar na fonte acadêmica:</strong><br>';
+  html+='Se você quiser aprofundar, consulte os repositórios acadêmicos abaixo com sua pergunta:<br>';
+  links.forEach(l=>{
+   html+='• <a href="'+l.url+'" target="_blank" rel="noopener noreferrer">'+l.name+'</a><br>';
+  });
+  html+='<em>Nota: estes links abrem a busca externa; o conteúdo não é avaliado por este assistente.</em></div>';
+  return html;
  }
  function thinkingResponse(userMessage){
   isTyping=true; sendBtn.disabled=true;
