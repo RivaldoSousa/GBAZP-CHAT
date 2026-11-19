@@ -153,42 +153,54 @@
 
  /* ============================================================
     MOTOR DE RAZIOCINÃO (thinking model)
-    Víncula a pergunta à base acadêmica e produz resposta humana/simples.
+    SEMPRE busca nas fontes acadêmicas e apresenta de forma simples e clara.
+    Fluxo: pergunta -> analise intent -> busca base acadêmica -> conecta -> resposta simples com fonte.
   ============================================================ */
  function analyzeIntent(msg){
   const m=msg.toLowerCase();
-  if(/explic|o que é|como funciona|conceito|defini[ãe]|zoomótica|thi|temperatura|umidade|estresse|térmico|welfare|awin|classyfarm|cinco liberdade|cinco domínio|this|esp32|dht22|iot|termohigrometr|preciva|pecuária|precisão|bovino|leite/i.test(m)) return 'academic';
-  if(/banca|comiss[aã]o|autodep[os]ósito|dep[o]sito|norma|esalq|usp|resolu[çã]o|copgr|ficha|comiss[jú]lga/i.test(m)) return 'procedure';
-  return 'general';
+  if(/explic|o que é|como funciona|conceito|defini[ãe]|zoomótica|thi|temperatura|umidade|estresse|térmico|welfare|awin|classyfarm|cinco liberdade|cinco domínio|this|esp32|dht22|iot|termohigrometr|preciva|pecuária|precisão|bovino|leite|bem-estar|ambiente|animal/i.test(m)) return 'academic';
+  if(/banca|comiss[aã]o|autodep[os]ósito|dep[o]sito|norma|esalq|usp|resolu[çã]o|copgr|ficha|comiss[jú]lga|procedimento|graduação/i.test(m)) return 'procedure';
+  return 'academic'; // sempre academic: nem perguntas genéricas escapam da base acadêmica
  }
- function matchKB(intent,msg){
+ function matchKB(msg){
   const m=msg.toLowerCase();
-  const hits=KB.filter(k=>{
+  // pontuação de relevância por palavra-chave acadêmica
+  const score=k=>{
    const hay=(k.titulo+' '+(k.campo||'')+' '+(k.texto||'')+' '+(k.fonte||'')).toLowerCase();
-   return hay.includes('zoomótica')&&/zoomótica|ambiente|bem-estar|sensori/i.test(m) ? true :
-          hay.includes('thi')&&/thi|temperatura|umidade|estresse|térmico/i.test(m) ? true :
-          hay.includes('welfare')||hay.includes('awin')||hay.includes('classyfarm')||/welfare|awin|classyfarm|cinco/i.test(m) ? true :
-          hay.includes('this')||hay.includes('esp32')||hay.includes('dht22')||/this|esp32|dht22|iot|termohigrometr/i.test(m) ? true :
-          hay.includes('pecuária')||hay.includes('precisão')||/preciva|pecu[áa]ria|precis[ião]o|bovino|leite/i.test(m) ? true :
-          /banca|comiss|autodep|dep[o]sito|norma|esalq|usp|resolu|copgr|ficha/i.test(m) && (hay.includes('autdepos')||hay.includes('banca')||hay.includes('esalq')||hay.includes('usp')) ? true : false;
-  });
-  if(hits.length) return hits;
-  // fallback general: return the most relevant academic entries
-  return KB.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria/i.test(k.texto.toLowerCase()));
+   let s=0;
+   if(/zoomótica|ambiente|bem-estar|sensori|modelagem|automa[iça]o|sist[iêe]mico/i.test(m)&&hay.includes('zoomótica'))s+=3;
+   if(/thi|temperatura|umidade|estresse|térmico/i.test(m)&&hay.includes('thi'))s+=3;
+   if(/welfare|awin|classyfarm|cinco (liberdade|domínio)|bem-estar animal/i.test(m)&&(hay.includes('welfare')||hay.includes('awin')||hay.includes('classyfarm')||hay.includes('cinco')))s+=3;
+   if(/this|esp32|dht22|iot|termohigrometr|dispositivo/i.test(m)&&(hay.includes('this')||hay.includes('esp32')||hay.includes('dht22')))s+=3;
+   if(/preciva|pecu[áa]ria|precis[ião]o|bovino|leite|rebanho/i.test(m)&&(hay.includes('pecu')||hay.includes('precis')||hay.includes('bov')||hay.includes('leite')))s+=3;
+   if(/banca|comiss|autodep|dep[o]sito|norma|esalq|usp|resolu|copgr|ficha/i.test(m)&&(hay.includes('autdepos')||hay.includes('banca')||hay.includes('esalq')||hay.includes('usp')))s+=3;
+   // keywords presentes no texto do registro (relevância parcial)
+   const words=m.split(/\s+/);
+   for(const w of words){
+    if(w.length>4&&(hay.includes(w)||w.includes('zoom')||w.includes('thi')||w.includes('welf')||w.includes('this')||w.includes('esp3')||w.includes('dht2')||w.includes('pecu')||w.includes('banc')||w.includes('ficha')))s+=0.5;
+   }
+   return s;
+  };
+  const scored=KB.map(k=>({k,s:score(k)})).filter(x=>x.s>0);
+  scored.sort((a,b)=>b.s-a.s);
+  const hits=scored.map(x=>x.k);
+  // se nada pontuou, trazer os registros mais acadêmicos (sempre embasado)
+  if(hits.length===0) return [KB[0],KB[1],KB[2],KB[3],KB[4],KB[5]]; // conceitos centrais
+  return hits.slice(0,6);
  }
  function think(userMessage){
   const intent=analyzeIntent(userMessage);
-  const hits=matchKB(intent,userMessage);
+  const hits=matchKB(userMessage);
   const steps=[];
   // 1. Analise a pergunta
-  steps.push({n:1,t:'Analisei sua pergunta.',d:'Você quer saber sobre <strong>'+(intent==='procedure'?'um procedimento acadêmico da ESALQ/USP':'um tema acadêmico')+'</strong>. Intent identificado: <strong>'+intent+'</strong>.',src:''});
-  // 2. Recupera base acadêmica
-  steps.push({n:2,t:'Recuperei a base acadêmica.',d:'Em minha base de conhecimento (embarcada na dissertação e nos documentos oficiais da ESALQ/USP), encontrei <strong>'+hits.length+'</strong> registro(s) relacionado(s).',src:''});
-  // 3. Conecta pergunta -> base
-  const link=hits.map(h=>'• <strong>'+h.titulo+'</strong> — '+h.texto).join('\n');
-  steps.push({n:3,t:'Conectei a pergunta à base acadêmica.',d:'A resposta é embasada nos registros acadêmicos abaixo:',src:''});
-  // 4. Resposta simples
-  steps.push({n:4,t:'Resposta (linguagem humana e simples).',d:'',src:''});
+  steps.push({n:1,t:'Analisei sua pergunta.',d:'Identifiquei o tema e o tipo de consulta. Intent: <strong>'+(intent==='procedure'?'procedimento acadêmico da ESALQ/USP':'conteúdo acadêmico (pesquisa)')+'</strong>.',src:''});
+  // 2. Busca nas fontes acadêmicas
+  steps.push({n:2,t:'Busquei nas fontes acadêmicas.',d:'Consultei a base de conhecimento embarcada — dissertação de mestrado "ZOOMÓTICA" (Sousa, 2026, ESALQ/USP) e documentos oficiais de pós-graduação da ESALQ/USP — e encontrei <strong>'+hits.length+'</strong> registro(s) relacionado(s) à sua pergunta.',src:''});
+  // 3. Conecta pergunta -> base acadêmica
+  const link=hits.map(h=>'• <strong>'+h.titulo+'</strong> ('+h.campo+') — '+h.texto).join('\n');
+  steps.push({n:3,t:'Conectei a pergunta à base acadêmica.',d:'A resposta será construída unindo sua pergunta aos conceitos acadêmicos relevantes:',src:''});
+  // 4. Resposta simples e clara
+  steps.push({n:4,t:'Resposta em linguagem humana e simples.',d:'',src:''});
   return {intent,hits,steps,link};
  }
  function formatMessage(text){
@@ -200,34 +212,59 @@
  }
  function buildAnswer(intent,hits,userMessage){
   const m=userMessage.toLowerCase();
-  // procedure answers
+  // --- PROCEDIMENTOS ACADÊMICOS (sempre com fonte oficial) ---
   if(intent==='procedure'){
    if(/autodep|dep[o]sito|ficha/i.test(m)){
-    return 'A <strong>ficha de autodeposição</strong> é a declaração em que você, como aluno, autoriza o depósito da dissertação/tese e afirma que o trabalho atende às Normas para Elaboração de Dissertações e Teses da ESALQ/USP vigentes. Você também declara que cumpriu a exigência de submissão/publicação de artigo científico (quando exigida pelo programa) e informa se o documento foi submetido ao software de verificação de integridade indicado pela instituição. A ficha oficial, com o número de CDD da biblioteca, deve ser solicitada por <strong>fichacat.esalq@usp.br</strong> antes do depósito da versão definitiva.';
+    const h=hits.find(k=>k.id==='k_autdepos')||hits[0];
+    return 'A <strong>ficha de autodeposição</strong> é a declaração em que você, como aluno, autoriza o depósito da dissertação/tese e afirma que o trabalho atende às Normas para Elaboração de Dissertações e Teses da ESALQ/USP vigentes. Você também declara que cumpriu a exigência de submissão/publicação de artigo científico (quando exigida pelo programa) e informa se o documento foi submetido ao software de verificação de integridade indicado pela instituição. A ficha oficial, com o número de CDD da biblioteca, deve ser solicitada por <strong>fichacat.esalq@usp.br</strong> antes do depósito da versão definitiva. <br><br><em>Fonte:</em> '+h.fonte;
    }
    if(/banca|comiss/i.test(m)){
-    return 'A <strong>composição da Comissão Julgadora (banca)</strong> é informada por formulário oficial, listando titulares e suplentes com nome (sem abreviações), Nº USP, vínculo de vídeo e e-mail da instituição. Se a defesa for <strong>remota</strong>, é exigida anuência prévia da CPG, solicitada via formulário disponível na instituição.';
+    const h=hits.find(k=>k.id==='k_banca')||hits[0];
+    return 'A <strong>composição da Comissão Julgadora (banca)</strong> é informada por formulário oficial, listando titulares e suplentes com nome (sem abreviações), Nº USP, vínculo de vídeo e e-mail da instituição. Se a defesa for <strong>remota</strong>, é exigida anuência prévia da CPG, solicitada via formulário disponível na instituição. <br><br><em>Fonte:</em> '+h.fonte;
    }
-   return 'Sou um assistente acadêmico da ESALQ/USP. Posso ajudar com procedimentos de pós-graduação (ficha de autodeposição, composição da banca, normas da Resolução CoPGr 6018) e com conteúdos da dissertação "ZOOMÓTICA". Em que posso ajudar?';
+   // procedimento genérico acadêmico
+   return 'Sou um assistente acadêmico da ESALQ/USP. Com base na Resolução CoPGr 6018 e nos documentos oficiais do programa, posso ajudar com procedimentos de pós-graduação: ficha de autodeposição, composição da banca de defesa/qualificação, normas de elaboração de dissertações e teses, e verificação de integridade. Em que posso ajudar? <br><br><em>Fontes:</em> documentos oficiais ESALQ/USP.';
   }
-  // academic content answers
+  // --- CONTEÚDO ACADÊMICO (sempre com fonte da dissertação) ---
   if(/zoomótica/i.test(m)){
-   return 'A <strong>Zoomótica</strong> é um campo aplicado que integra sensoriamento, modelagem e automação da ambiência para gerir o bem-estar do coletivo animal de forma contínua e sistêmica. Em termos simples: usa sensores e tecnologia para acompanhar o ambiente dos animais (temperatura, umidade) e, com isso, tomar decisões que melhorem o bem-estar do rebanho de forma contínua, não apenas em avaliações pontuais. Fonte: Sousa (2026), Dissertação de Mestrado, ESALQ/USP.';
+   const h=hits.find(k=>k.id==='k_zoomotic')||hits[0];
+   return 'A <strong>Zoomótica</strong> é um campo aplicado que integra sensoriamento, modelagem e automação da ambiência para gerir o bem-estar do coletivo animal de forma contínua e sistêmica. Em termos simples: usa sensores e tecnologia para acompanhar o ambiente dos animais (temperatura, umidade) e, com isso, tomar decisões que melhorem o bem-estar do rebanho de forma contínua, não apenas em avaliações pontuais. <br><br><em>Fonte:</em> '+h.fonte;
   }
   if(/thi|temperatura|umidade|estresse|térmico/i.test(m)){
-   return 'O <strong>Índice de Temperatura e Umidade (THI)</strong> combina temperatura e umidade relativa para estimar se os animais estão confortáveis térmicos. Em regiões tropicais, o estresse térmico é uma restrição permanente na produção animal. A dissertação propõe monitorar esse índice continuamente (com o dispositivo THIS) e integrá-lo a tecnologias de pecuária de precisão e protocolos de bem-estar, como o Welfare Quality®. Fonte: Sousa (2026), Cap. 3.';
+   const h=hits.find(k=>k.id==='k_thi')||hits[0];
+   return 'O <strong>Índice de Temperatura e Umidade (THI)</strong> combina temperatura e umidade relativa para estimar se os animais estão confortáveis térmicos. Em regiões tropicais, o estresse térmico é uma restrição permanente na produção animal. A dissertação propõe monitorar esse índice continuamente (com o dispositivo THIS) e integrá-lo a tecnologias de pecuária de precisão e protocolos de bem-estar, como o Welfare Quality®. <br><br><em>Fonte:</em> '+h.fonte;
   }
   if(/welfare|awin|classyfarm|cinco/i.test(m)){
-   return 'Existem protocolos formais de avaliação do bem-estar animal, como o <strong>Welfare Quality®</strong>, o <strong>AWIN</strong> e o <strong>ClassyFarm</strong>, além dos modelos das <strong>Cinco Liberdades</strong> e dos <strong>Cinco Domínios</strong>. As Cinco Liberdades focam em necessidades básicas dos animais; os Cinco Domínios organizam o bem-estar em nutrição, moradia, saúde, comportamento e estado mental. A dissertação mostra que unir essas abordagens ao monitoramento contínuo da ambiência ainda é pouco explorado na literatura. Fonte: Sousa (2026), Cap. 3.';
+   const h=hits.find(k=>k.id==='k_welfare')||hits.find(k=>k.id==='k_modelos')||hits[0];
+   return 'Existem protocolos formais de avaliação do bem-estar animal, como o <strong>Welfare Quality®</strong>, o <strong>AWIN</strong> e o <strong>ClassyFarm</strong>, além dos modelos das <strong>Cinco Liberdades</strong> e dos <strong>Cinco Domínios</strong>. As Cinco Liberdades focam em necessidades básicas dos animais (água, alimento, abrigo, ausência de dor/doença, ausência de medo/estresse); os Cinco Domínios organizam o bem-estar em nutrição, moradia, saúde, comportamento e estado mental, integrando o afeto animal. A dissertação mostra que unir essas abordagens ao monitoramento contínuo da ambiência ainda é pouco explorado na literatura. <br><br><em>Fonte:</em> '+h.fonte;
   }
   if(/this|esp32|dht22|iot|termohigrometr/i.test(m)){
-   return 'O <strong>THIS (IoT Thermohygrometer System)</strong> é um dispositivo termohigrométrico de baixo consumo baseado na placa <strong>ESP32-C6 Super Mini</strong> e no sensor digital <strong>DHT22</strong>, integrado a uma planilha Google Sheets que funciona como registrador, interface de configuração remota e painel de decisão para o produtor. Foi verificado em laboratório contra registradores Testo 174H e psicrômetro analógico e aplicado em campo (compost barn). Fonte: Sousa (2026), Cap. 4.';
+   const h=hits.find(k=>k.id==='k_this')||hits[0];
+   return 'O <strong>THIS (IoT Thermohygrometer System)</strong> é um dispositivo termohigrométrico de baixo consumo baseado na placa <strong>ESP32-C6 Super Mini</strong> e no sensor digital <strong>DHT22</strong>, integrado a uma planilha Google Sheets que funciona como registrador, interface de configuração remota e painel de decisão para o produtor. Foi verificado em laboratório contra registradores Testo 174H e psicrômetro analógico e aplicado em campo (compost barn). <br><br><em>Fonte:</em> '+h.fonte;
   }
   if(/preciva|pecuária|precisão|bovino|leite/i.test(m)){
-   return 'Na <strong>bovinocultura de leite</strong> em ambiente tropical, o estresse térmico é constante. A proposta é integrar o monitoramento contínuo da ambiência (THI) a tecnologias de <strong>pecuária de precisão</strong> e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica. Fonte: Sousa (2026), Resumo.';
+   const h=hits.find(k=>k.id==='k_plf')||hits[0];
+   return 'Na <strong>bovinocultura de leite</strong> em ambiente tropical, o estresse térmico é constante. A proposta é integrar o monitoramento contínuo da ambiência (THI) a tecnologias de <strong>pecuária de precisão</strong> e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica. <br><br><em>Fonte:</em> '+h.fonte;
   }
-  // general fallback grounded in academic work
-  return 'Sou um assistente acadêmico embasado na dissertação de mestrado <strong>"ZOOMÓTICA: tecnologias aplicadas à ambiência de forma coletiva com foco em qualidade de vida e bem-estar animal"</strong> (Rivaldo Geovane Miranda de Sousa, ESALQ/USP, 2026) e nos documentos oficiais de pós-graduação da ESALQ/USP. Posso explicar conceitos de Zoomótica, THI, protocolos de bem-estar animal (Welfare Quality®, AWIN, ClassyFarm, Cinco Liberdades/Cinco Domínios), o dispositivo THIS (ESP32 + DHT22) e procedimentos acadêmicos (ficha de autodeposição, banca, normas CoPGr 6018). Em que posso ajudar?';
+  // --- resposta geral sempre embasada nas fontes acadêmicas centrais ---
+  const central=hits.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria/i.test(k.texto.toLowerCase())).slice(0,3);
+  const linhas=central.map(h=>'• <strong>'+h.titulo+'</strong> — '+h.texto+'. <em>Fonte:</em> '+h.fonte).join('<br>');
+  return 'Sou um assistente acadêmico embasado nas fontes de pesquisa e nos documentos oficiais de pós-graduação da ESALQ/USP. Mesmo para uma pergunta geral, minha resposta parte da base acadêmica. Os principais conceitos que disponibilizo são:<br>'+linhas+'<br><br>Em que posso ajudar?';
+ }
+ function thinkingResponse(userMessage){
+  isTyping=true; sendBtn.disabled=true;
+  const {intent,hits,steps,link}=think(userMessage);
+  // show thinking block with steps (including the answer step placeholder)
+  const thinkingEl=showThinking(steps);
+  // replace step 4 with the actual answer after a short pause (simulated thinking)
+  setTimeout(()=>{
+   const answer=buildAnswer(intent,hits,userMessage);
+   const sources=hits.map(h=>'• '+h.titulo+' — '+h.fonte).join('<br>');
+   finishThinking(thinkingEl, answer, sources);
+   isTyping=false;
+   sendBtn.disabled=messageInput.value.trim().length===0;
+   messageInput.focus();
+  },600);
  }
  function showThinking(steps){
   const t=document.createElement('div'); t.className='thinking';
@@ -255,22 +292,6 @@
    messagesArea.appendChild(s);
   }
   scrollToBottom();
- }
- function thinkingResponse(userMessage){
-  isTyping=true; sendBtn.disabled=true;
-  const {intent,hits,steps,link}=think(userMessage);
-  // show thinking block with steps (including the answer step placeholder)
-  const thinkingEl=showThinking(steps);
-  // replace step 4 with the actual answer after a short pause (simulated thinking)
-  setTimeout(()=>{
-   const answer=buildAnswer(intent,hits,userMessage);
-   const sources=hits.map(h=>'• '+h.titulo+' — '+h.fonte).join('<br>');
-   // update the last step (answer) to show the real answer content, then convert block to message
-   finishThinking(thinkingEl, answer, sources);
-   isTyping=false;
-   sendBtn.disabled=messageInput.value.trim().length===0;
-   messageInput.focus();
-  },600);
  }
  function init(){applyTheme();setupEventListeners();autoResizeTextarea()}
  function applyTheme(){document.documentElement.setAttribute('data-theme',isDark?'dark':'light');themeToggle.querySelector('.sun-icon').style.display=isDark?'block':'none';themeToggle.querySelector('.moon-icon').style.display=isDark?'none':'block'}
