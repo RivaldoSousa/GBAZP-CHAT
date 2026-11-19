@@ -1,1539 +1,298 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GBAZP - CHAT</title>
-    <meta name="theme-color" content="#0a1628">
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --bg-primary: #0a1628;
-            --bg-secondary: #112240;
-            --bg-tertiary: #1a2a4a;
-            --text-primary: #ffffff;
-            --text-secondary: #a8b2d1;
-            --accent: #dc2626;
-            --accent-hover: #ef4444;
-            --border: #1e3a5f;
-            --shadow: rgba(0, 0, 0, 0.4);
-            --user-msg: #dc2626;
-            --assistant-msg: #1a2a4a;
-            --code-bg: #0d1b2a;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f1f5f8;
-            --bg-tertiary: #dce7ef;
-            --text-primary: #0a1628;
-            --text-secondary: #4d6478;
-            --accent: #dc2626;
-            --accent-hover: #b8030f;
-            --border: #c7d5df;
-            --shadow: rgba(7, 26, 43, 0.12);
-            --user-msg: #dc2626;
-            --assistant-msg: #ffffff;
-            --code-bg: #e8f0f5;
-        }
-
-        [data-theme="dark"] {
-            --bg-primary: #0a1628;
-            --bg-secondary: #112240;
-            --bg-tertiary: #1a2a4a;
-            --text-primary: #ffffff;
-            --text-secondary: #a8b2d1;
-            --accent: #dc2626;
-            --accent-hover: #ef4444;
-            --border: #1e3a5f;
-            --shadow: rgba(0, 0, 0, 0.4);
-            --user-msg: #dc2626;
-            --assistant-msg: #1a2a4a;
-            --code-bg: #0d1b2a;
-        }
-
-        html { background: #0a1628 !important; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-primary) !important;
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-            background-size: 34px 34px;
-            mask-image: linear-gradient(to bottom, black, transparent 85%);
-        }
-
-        /* Landing Page */
-        .landing {
-            position: relative;
-            overflow: hidden;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: space-between;
-            padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1.25rem, 6vw, 7rem) 1.5rem;
-            text-align: left;
-            min-height: 100vh;
-            background: #101722;
-        }
-
-        .landing::after {
-            content: "GBAZP";
-            position: absolute;
-            right: -3vw;
-            bottom: 4vh;
-            font-size: clamp(8rem, 18vw, 18rem);
-            font-weight: 800;
-            letter-spacing: -0.09em;
-            color: rgba(255, 255, 255, 0.025);
-            pointer-events: none;
-        }
-
-        .landing-shell {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: clamp(2rem, 8vw, 9rem);
-            width: min(1180px, 100%);
-            margin: auto;
-        }
-
-        .hero-copy { max-width: 610px; }
-
-        .eyebrow {
-            display: flex;
-            align-items: center;
-            gap: 0.65rem;
-            color: #e83d43;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.18em;
-            margin-bottom: 1.4rem;
-        }
-
-        .eyebrow-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #e30613;
-            box-shadow: 0 0 0 5px rgba(227, 6, 19, 0.14);
-        }
-
-        .landing h1 {
-            color: #fff;
-            background: none;
-            -webkit-text-fill-color: initial;
-            font-size: clamp(3rem, 6.4vw, 6.7rem);
-            letter-spacing: -0.075em;
-            line-height: 1.05;
-            margin-bottom: 1.35rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .landing h1 span { color: var(--accent); }
-
-        .landing p {
-            max-width: 510px;
-            color: #aeb8c7;
-            font-size: clamp(1rem, 1.35vw, 1.2rem);
-            line-height: 1.75;
-            margin-bottom: 2rem;
-        }
-
-        .hero-actions {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .btn-start {
-            display: inline-flex;
-            align-items: center;
-            gap: 1.2rem;
-            padding: 1rem 1.35rem 1rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #fff;
-            background: var(--accent);
-            border: 0;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 12px 35px rgba(227, 6, 19, 0.22);
-            transition: all 0.2s;
-        }
-
-        .btn-start:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
-
-        .btn-start span { font-size: 1.4rem; line-height: 0.6; transition: transform 0.2s; }
-        .btn-start:hover span { transform: translateX(4px); }
-
-        .hero-note {
-            color: #778397;
-            font-size: 0.82rem;
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 2.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.11);
-            margin-top: 3.2rem;
-            padding-top: 1.25rem;
-        }
-
-        .hero-stats div {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .hero-stats strong { color: #fff; font-size: 1rem; }
-        .hero-stats span { color: #778397; font-size: 0.7rem; }
-
-        .hero-art {
-            position: relative;
-            width: min(42vw, 480px);
-            min-width: 290px;
-            aspect-ratio: 1;
-            display: grid;
-            place-items: center;
-        }
-
-        .art-glow {
-            position: absolute;
-            width: 76%;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(220, 38, 38, 0.3), rgba(220, 38, 38, 0) 68%);
-            filter: blur(16px);
-        }
-
-        .hero-art::before {
-            content: "";
-            position: absolute;
-            inset: 6%;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-        }
-
-        .hero-art::after {
-            content: "";
-            position: absolute;
-            inset: 15%;
-            border: 1px dashed rgba(220, 38, 38, 0.4);
-            border-radius: 50%;
-            transform: rotate(24deg);
-        }
-
-        .logo-container {
-            position: relative;
-            z-index: 2;
-            width: min(28vw, 300px);
-            min-width: 220px;
-            height: auto;
-            aspect-ratio: 1;
-            border-radius: 22%;
-            padding: 0;
-            overflow: hidden;
-            background: #191e29;
-            border: 8px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(220, 38, 38, 0.35);
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .art-caption {
-            position: absolute;
-            z-index: 3;
-            right: -7%;
-            bottom: 6%;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.65rem 0.8rem;
-            color: #d7deea;
-            font-size: 0.68rem;
-            background: rgba(16, 23, 34, 0.86);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 7px;
-            backdrop-filter: blur(8px);
-        }
-
-        .caption-line {
-            width: 20px;
-            height: 2px;
-            background: #e30613;
-        }
-
-        .landing-footer {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: space-between;
-            width: min(1180px, 100%);
-            margin: 0 auto;
-            color: #69768a;
-            font-size: 0.67rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .footer-mark { color: var(--accent); font-size: 1rem; line-height: 0; }
-
-        /* Chat Interface */
-        .chat-container {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            height: 100vh;
-            background: var(--bg-primary);
-        }
-
-        .chat-container.active { display: flex; }
-
-        /* Header */
-        .chat-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo-small {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: var(--bg-tertiary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .logo-small img { width: 100%; height: 100%; object-fit: cover; }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            border: 0;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .icon-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-
-        .icon-btn svg { width: 20px; height: 20px; }
-
-        /* Messages Area */
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            background: var(--bg-secondary);
-        }
-
-        .welcome-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .welcome-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            background: var(--bg-tertiary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-
-        .welcome-logo img { width: 100%; height: 100%; object-fit: cover; }
-
-        .welcome-screen h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .welcome-screen p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            max-width: 400px;
-            line-height: 1.6;
-        }
-
-        /* Filter Tabs */
-        .filter-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .filter-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-        }
-
-        /* Suggestions */
-        .suggestions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-            width: 100%;
-            max-width: 700px;
-        }
-
-        .suggestion-card {
-            padding: 1.25rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .suggestion-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 4px 16px var(--shadow);
-            transform: translateY(-2px);
-        }
-
-        .suggestion-card.hidden { display: none; }
-
-        .suggestion-card .icon {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 0.75rem;
-            color: var(--accent);
-            flex-shrink: 0;
-        }
-
-        .suggestion-card h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .suggestion-card .card-summary {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .suggestion-card .expand-indicator {
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            font-size: 0.75rem;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: transform 0.2s;
-        }
-
-        .suggestion-card.expanded .expand-indicator { transform: rotate(180deg); }
-
-        .suggestion-card.expanded {
-            grid-column: 1 / -1;
-            max-height: 500px;
-        }
-
-        /* Expanded Detail View */
-        .card-detail {
-            display: none;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .suggestion-card.expanded .card-detail { display: block; }
-
-        .card-detail h5 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-detail h5::before {
-            content: "";
-            width: 4px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
-
-        .card-detail ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .card-detail li {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            padding-left: 1.25rem;
-            position: relative;
-            line-height: 1.5;
-        }
-
-        .card-detail li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        .card-detail .producer-tip {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            border-left: 3px solid var(--accent);
-        }
-
-        .card-detail .producer-tip strong {
-            font-size: 0.75rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .card-detail .producer-tip p {
-            font-size: 0.8rem;
-            color: var(--text-primary);
-            margin-top: 0.25rem;
-            line-height: 1.5;
-        }
-
-        .card-detail .action-btn-inline {
-            margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: white;
-            background: var(--accent);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-        }
-
-        .card-detail .action-btn-inline:hover { background: var(--accent-hover); }
-
-        /* Message Bubbles */
-        .message {
-            display: flex;
-            gap: 0.75rem;
-            max-width: 85%;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.user { align-self: flex-end; flex-direction: row-reverse; }
-        .message.assistant { align-self: flex-start; }
-
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .avatar.user { background: var(--user-msg); color: #fff; }
-        .avatar.assistant { background: var(--bg-tertiary); color: var(--accent); }
-
-        .message-content {
-            padding: 0.875rem 1.125rem;
-            border-radius: 18px;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            position: relative;
-        }
-
-        .message.user .message-content {
-            background: var(--user-msg);
-            color: #fff;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant .message-content {
-            background: var(--assistant-msg);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-            border-bottom-left-radius: 4px;
-        }
-
-        .message-content code {
-            font-family: monospace;
-            font-size: 0.85em;
-            background: var(--code-bg);
-            padding: 0.15em 0.4em;
-            border-radius: 4px;
-        }
-
-        .message-content pre {
-            margin: 0.75rem 0;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .message-content pre code {
-            display: block;
-            padding: 1rem;
-            background: var(--code-bg);
-            overflow-x: auto;
-            line-height: 1.5;
-        }
-
-        .message-content ul, .message-content ol {
-            margin: 0.5rem 0;
-            padding-left: 1.5rem;
-        }
-
-        .message-content li { margin: 0.25rem 0; }
-
-        .message-content a { color: var(--accent); text-decoration: none; }
-        .message-content a:hover { text-decoration: underline; }
-
-        .message-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .message:hover .message-actions { opacity: 1; }
-
-        .action-btn {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: flex;
-            gap: 0.75rem;
-            align-self: flex-start;
-            padding: 0.5rem 0;
-        }
-
-        .typing-indicator .avatar { animation: bounce 1.4s ease-in-out infinite; }
-
-        .typing-dots {
-            display: flex;
-            gap: 3px;
-            padding: 0.75rem 1rem;
-            background: var(--assistant-msg);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            border-bottom-left-radius: 4px;
-        }
-
-        .typing-dots span {
-            width: 6px;
-            height: 6px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-            animation: typing 1.4s ease-in-out infinite;
-        }
-
-        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-4px); opacity: 1; }
-        }
-
-        /* Input Area */
-        .input-area {
-            padding: 1.5rem;
-            background: var(--bg-primary);
-            border-top: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-
-        .input-wrapper {
-            max-width: 750px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 0.75rem;
-            align-items: flex-end;
-        }
-
-        .textarea-container {
-            flex: 1;
-            position: relative;
-        }
-
-        #messageInput {
-            width: 100%;
-            min-height: 52px;
-            max-height: 200px;
-            padding: 0.875rem 1rem;
-            font-family: inherit;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: var(--text-primary);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            resize: none;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        #messageInput:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
-        }
-
-        #messageInput::placeholder { color: var(--text-secondary); }
-
-        .input-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .send-btn {
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
-            background: var(--accent);
-            border: 0;
-            color: #fff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .send-btn:hover:not(:disabled) {
-            background: var(--accent-hover);
-            transform: scale(1.02);
-        }
-
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .send-btn svg { width: 22px; height: 22px; }
-
-        .input-hint {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-align: center;
-            padding-top: 0.25rem;
-        }
-
-        .input-hint kbd {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            padding: 0.125rem 0.375rem;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 0.75rem;
-        }
-
-        /* Mobile */
-        @media (max-width: 760px) {
-            .landing {
-                padding: 1.4rem 1.25rem 1rem;
-            }
-            .landing-shell {
-                flex-direction: column-reverse;
-                align-items: flex-start;
-                gap: 1rem;
-                justify-content: center;
-            }
-            .hero-art {
-                align-self: center;
-                width: min(80vw, 360px);
-                min-width: 0;
-            }
-            .logo-container {
-                min-width: 170px;
-                width: 52vw;
-            }
-            .art-caption {
-                right: -2%;
-                bottom: 3%;
-            }
-            .landing h1 {
-                font-size: clamp(2.8rem, 14vw, 4.8rem);
-            }
-            .hero-stats {
-                margin-top: 2rem;
-                gap: 1.5rem;
-            }
-            .landing-footer {
-                margin-top: 1.25rem;
-            }
-            .message { max-width: 90%; }
-            .chat-header { padding: 0.75rem 1rem; }
-            .messages-area { padding: 1.5rem 1rem; }
-            .input-area { padding: 1rem; }
-            .send-btn { width: 48px; height: 48px; }
-            .suggestions { grid-template-columns: 1fr; }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>GBAZP Chat | Assistente inteligente</title>
+ <meta name="theme-color" content="#1d202d">
+ <link rel="icon" type="image/png" href="pasted_file_Etp5v6_image.png">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+ <style>
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+ :root { --bg-primary:#1d202d; --bg-secondary:#151821; --bg-tertiary:#282c3a; --text-primary:#f7f7f8; --text-secondary:#c4c4ce; --accent:#c9222c; --accent-hover:#df3c45; --border:#424250; --shadow:rgba(0,0,0,.38); --user-msg:#ba252d; --assistant-msg:#282b39; --code-bg:#171922; }
+ [data-theme="light"] { --bg-primary:#f7f7f9; --bg-secondary:#eef0f4; --bg-tertiary:#e0e2e8; --text-primary:#1d202d; --text-secondary:#5d6170; --accent:#bf2630; --accent-hover:#a51e28; --border:#d5d6dc; --shadow:rgba(29,32,45,.12); --user-msg:#bf2630; --assistant-msg:#fff; --code-bg:#ececf1; }
+ [data-theme="dark"] { --bg-primary:#1d202d; --bg-secondary:#151821; --bg-tertiary:#282c3a; --text-primary:#f7f7f8; --text-secondary:#c4c4ce; --accent:#c9222c; --accent-hover:#df3c45; --border:#424250; --shadow:rgba(0,0,0,.38); --user-msg:#ba252d; --assistant-msg:#282b39; --code-bg:#171922; }
+ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; display:flex; flex-direction:column; transition:background .3s,color .3s; }
+ body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:0; background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px); background-size:34px 34px; mask-image:linear-gradient(to bottom,black,transparent 85%); }
+ .landing { position:relative; min-height:100vh; min-height:100svh; display:grid; place-items:center; overflow:hidden; padding:1rem; background:#1d202d; }
+ .splash-button { display:grid; place-items:center; width:min(100%,1024px,calc(100svh - 2rem)); max-height:calc(100svh - 2rem); aspect-ratio:1; padding:0; border:0; border-radius:0; background:transparent; cursor:pointer; transition:transform .2s ease; }
+ .splash-button img { display:block; width:100%; height:100%; object-fit:contain; }
+ .splash-button:hover { transform:scale(1.008); }
+ .splash-button:focus-visible { outline:3px solid #f7f7f8; outline-offset:4px; }
+ @media (prefers-reduced-motion: reduce) { .splash-button { transition:none; } .splash-button:hover { transform:none; } }
+ .chat-container { display:none; flex:1; flex-direction:column; width:100%; max-width:900px; margin:0 auto; height:100vh; }
+ .chat-container.active { display:flex; }
+ .chat-header { padding:1rem 1.5rem; border-bottom:1px solid var(--border); background:var(--bg-primary); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+ .header-left { display:flex; align-items:center; gap:1rem; }
+ .logo-small { width:36px; height:36px; border-radius:8px; background:var(--bg-tertiary); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+ .logo-small img { width:100%; height:100%; object-fit:cover; }
+ .header-title { font-size:1.1rem; font-weight:600; color:var(--text-primary); }
+ .header-actions { display:flex; align-items:center; gap:.5rem; }
+ .icon-btn { width:40px; height:40px; border-radius:10px; border:0; background:transparent; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+ .icon-btn:hover { background:var(--bg-tertiary); color:var(--text-primary); }
+ .icon-btn svg { width:20px; height:20px; }
+ .messages-area { flex:1; overflow-y:auto; padding:2rem 1.5rem; display:flex; flex-direction:column; gap:1.5rem; background:var(--bg-secondary); }
+ .welcome-screen { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; }
+ .welcome-logo { width:80px; height:80px; border-radius:16px; background:var(--bg-tertiary); display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; overflow:hidden; }
+ .welcome-logo img { width:100%; height:100%; object-fit:cover; }
+ .welcome-screen h2 { font-size:1.75rem; font-weight:600; margin-bottom:.5rem; color:var(--text-primary); }
+ .welcome-screen p { color:var(--text-secondary); font-size:1rem; max-width:400px; line-height:1.6; }
+ .suggestions { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:.75rem; margin-top:2rem; width:100%; max-width:600px; }
+ .suggestion-card { padding:1rem 1.25rem; background:var(--bg-primary); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all .2s; text-align:left; }
+ .suggestion-card:hover { border-color:var(--accent); box-shadow:0 4px 16px var(--shadow); transform:translateY(-2px); }
+ .suggestion-card .icon { width:20px; height:20px; margin-bottom:.5rem; color:var(--accent); }
+ .suggestion-card h4 { font-size:.95rem; font-weight:600; color:var(--text-primary); margin-bottom:.25rem; }
+ .suggestion-card p { font-size:.85rem; color:var(--text-secondary); }
+ .message { display:flex; gap:.75rem; max-width:85%; animation:fadeIn .3s ease; }
+ @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+ .message.user { align-self:flex-end; flex-direction:row-reverse; } .message.assistant { align-self:flex-start; }
+ .avatar { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.85rem; font-weight:600; }
+ .avatar.user { background:var(--user-msg); color:#fff; } .avatar.assistant { background:var(--bg-tertiary); color:var(--accent); }
+ .message-content { padding:.875rem 1.125rem; border-radius:18px; line-height:1.6; font-size:.95rem; position:relative; }
+ .message.user .message-content { background:var(--user-msg); color:#fff; border-bottom-right-radius:4px; }
+ .message.assistant .message-content { background:var(--assistant-msg); color:var(--text-primary); border:1px solid var(--border); border-bottom-left-radius:4px; }
+ .message-content code { font-family:monospace; font-size:.85em; background:var(--code-bg); padding:.15em .4em; border-radius:4px; }
+ .message-content pre { margin:.75rem 0; border-radius:12px; overflow:hidden; } .message-content pre code { display:block; padding:1rem; background:var(--code-bg); overflow-x:auto; line-height:1.5; }
+ .message-content ul,.message-content ol { margin:.5rem 0; padding-left:1.5rem; } .message-content li { margin:.25rem 0; }
+ .message-content a { color:var(--accent); text-decoration:none; } .message-content a:hover { text-decoration:underline; }
+ .message-actions { display:flex; gap:.5rem; margin-top:.5rem; opacity:0; transition:opacity .2s; } .message:hover .message-actions { opacity:1; }
+ .action-btn { padding:.375rem .75rem; font-size:.75rem; background:var(--bg-tertiary); border:1px solid var(--border); border-radius:6px; color:var(--text-secondary); cursor:pointer; transition:all .2s; }
+ .action-btn:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
+ .typing-indicator { display:flex; gap:.75rem; align-self:flex-start; padding:.5rem 0; } .typing-indicator .avatar { animation:bounce 1.4s ease-in-out infinite; }
+ .typing-dots { display:flex; gap:3px; padding:.75rem 1rem; background:var(--assistant-msg); border:1px solid var(--border); border-radius:18px; border-bottom-left-radius:4px; }
+ .typing-dots span { width:6px; height:6px; background:var(--text-secondary); border-radius:50%; animation:typing 1.4s ease-in-out infinite; } .typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
+ @keyframes bounce { 0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)} } @keyframes typing { 0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1} }
+ .thinking { display:flex; gap:.75rem; align-self:flex-start; padding:.5rem 0; }
+ .thinking .avatar { background:var(--bg-tertiary); color:var(--accent); }
+ .thinking-content { background:var(--bg-tertiary); border:1px solid var(--border); border-radius:10px; padding:.875rem 1.125rem; max-width:85%; line-height:1.6; font-size:.88rem; }
+ .thinking-step { margin:.35rem 0; color:var(--text-secondary); }
+ .thinking-step .n { color:var(--accent); font-weight:700; margin-right:.4rem; }
+ .thinking-step strong { color:var(--text-primary); }
+ .input-area { padding:1.5rem; background:var(--bg-primary); border-top:1px solid var(--border); flex-shrink:0; }
+ .input-wrapper { max-width:750px; margin:0 auto; display:flex; flex-direction:column; gap:.75rem; } .input-row{display:flex;gap:.75rem;align-items:flex-end}.textarea-container{flex:1;position:relative}
+ #messageInput { width:100%; min-height:52px; max-height:200px; padding:.875rem 1rem; font-family:inherit; font-size:1rem; line-height:1.5; color:var(--text-primary); background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; resize:none; outline:none; transition:all .2s; }
+ #messageInput:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(201,34,44,.18); } #messageInput::placeholder{color:var(--text-secondary)}
+ .input-actions { display:flex; gap:.5rem; align-items:center; } .send-btn{width:52px;height:52px;border-radius:12px;background:var(--accent);border:0;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}.send-btn:hover:not(:disabled){background:var(--accent-hover);transform:scale(1.02)}.send-btn:disabled{opacity:.5;cursor:not-allowed}.send-btn svg{width:22px;height:22px}
+ .input-hint { font-size:.8rem;color:var(--text-secondary);text-align:center;padding-top:.25rem }.input-hint kbd{background:var(--bg-tertiary);border:1px solid var(--border);padding:.125rem .375rem;border-radius:4px;font-family:inherit;font-size:.75rem}
+ @media (max-width:760px){.message{max-width:90%}.chat-header{padding:.75rem 1rem}.messages-area{padding:1.5rem 1rem}.input-area{padding:1rem}.send-btn{width:48px;height:48px}.suggestions{grid-template-columns:1fr}}
+ ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+ </style>
 </head>
 <body>
-    <!-- Landing Page -->
-    <div class="landing" id="landing">
-        <div class="landing-shell">
-            <div class="hero-copy">
-                <div class="eyebrow">
-                    <span class="eyebrow-dot"></span>
-                    ESALQ-USP · INTELIGÊNCIA APLICADA
-                </div>
-                <h1>Conhecimento que<br><span>vai direto ao ponto.</span></h1>
-                <p>O GBAZP Chat transforma perguntas em conversas claras, ideias práticas e respostas que ajudam você a avançar.</p>
-                <div class="hero-actions">
-                    <button class="btn-start" id="startChat">Começar conversa <span>→</span></button>
-                    <span class="hero-note">Rápido, simples e feito para aprender.</span>
-                </div>
-                <div class="hero-stats">
-                    <div>
-                        <strong>24/7</strong>
-                        <span>Disponível quando precisar</span>
-                    </div>
-                    <div>
-                        <strong>PT-BR</strong>
-                        <span>Respostas em português</span>
-                    </div>
-                </div>
-            </div>
-            <div class="hero-art">
-                <div class="art-glow"></div>
-                <div class="logo-container">
-                    <img src="logo.png" alt="Logo GBAZP — ESALQ-USP" class="logo-img">
-                </div>
-                <div class="art-caption">
-                    <span class="caption-line"></span>
-                    <span>Conhecimento para o campo e para a cidade</span>
-                </div>
-            </div>
-        </div>
-        <div class="landing-footer">
-            <span>GBAZP CHAT</span>
-            <span>Assistente de IA pessoal</span>
-            <span class="footer-mark">●</span>
-        </div>
-    </div>
-
-    <!-- Chat Interface -->
-    <div class="chat-container" id="chatContainer">
-        <header class="chat-header">
-            <div class="header-left">
-                <button class="icon-btn" id="newChat" title="Nova conversa">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                </button>
-                <div class="logo-small">
-                    <img src="logo.png" alt="GBAZP">
-                </div>
-                <span class="header-title">GBAZP - CHAT</span>
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn theme-toggle" id="themeToggle" title="Alternar tema">
-                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
-                </button>
-            </div>
-        </header>
-
-        <main class="messages-area" id="messagesArea">
-            <div class="welcome-screen" id="welcomeScreen">
-                <div class="welcome-logo">
-                    <img src="logo.png" alt="GBAZP">
-                </div>
-                <h2>Como posso ajudar hoje?</h2>
-                <p>Especialista em engenharia agrícola, bem-estar e ambiência animal, tecnologias para produção e manejo, e geração de cartilhas técnicas com soluções práticas.</p>
-
-                <div class="filter-tabs" id="filterTabs">
-                    <button class="filter-btn active" data-filter="all">Todos</button>
-                    <button class="filter-btn" data-filter="engenharia">Engenharia Agrícola</button>
-                    <button class="filter-btn" data-filter="bemestar">Bem-Estar Animal</button>
-                    <button class="filter-btn" data-filter="tecnologias">Tecnologias</button>
-                    <button class="filter-btn" data-filter="cartilhas">Cartilhas</button>
-                </div>
-
-                <div class="suggestions" id="suggestions">
-                    <div class="suggestion-card" data-category="engenharia" data-prompt="Como otimizar sistemas de ventilação e climatização em instalações de suínos e aves para melhorar a ambiência e reduzir estresse térmico?">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25z"/>
-                            <path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
-                        </svg>
-                        <h4>Engenharia Agrícola & Ambiência</h4>
-                        <p class="card-summary">Ventilação, climatização, conforto térmico em instalações de suínos, aves e bovinos</p>
-                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-                        <div class="card-detail">
-                            <h5>O que você vai encontrar:</h5>
-                            <ul>
-                                <li>Dimensionamento de ventiladores e exaustores por m² de galpão</li>
-                                <li>Curvas de temperatura ideal por fase de criação (creche, crescimento, terminação)</li>
-                                <li>Sistemas de resfriamento evaporativo (painéis, nebulização, aspersão)</li>
-                                <li>Controle de umidade relativa e velocidade do ar</li>
-                                <li>Automação com controladores climáticos (temporizados, por temperatura, por umidade)</li>
-                                <li>Economia de energia: inversores de frequência, ventilação por etapas</li>
-                                <li>Manejo de cortinas laterais e inlet de ar</li>
-                            </ul>
-                            <div class="producer-tip">
-                                <strong>Dica para o produtor:</strong>
-                                <p>Comece medindo a temperatura na altura dos animais (não no teto!). Uma diferença de 3°C acima do ideal já reduz ganho de peso em 5-10%. Invista primeiro em termômetros de mínimo/máxima em vários pontos do galpão antes de comprar equipamentos caros.</p>
-                            </div>
-                            <button class="action-btn-inline" onclick="sendSpecificPrompt('engenharia')">Quero orientação prática para minha instalação</button>
-                        </div>
-                    </div>
-
-                    <div class="suggestion-card" data-category="bemestar" data-prompt="Quais são as melhores práticas de bem-estar animal baseadas em evidências para sistemas de produção de suínos, aves e bovinos? Inclua protocolos de avaliação e indicadores comportamentais.">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6z"/>
-                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            <path d="M12 9v4m0 4h.01"/>
-                        </svg>
-                        <h4>Bem-Estar & Ambiência Animal</h4>
-                        <p class="card-summary">Protocolos baseados em evidências, indicadores comportamentais para suínos, aves e bovinos</p>
-                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-                        <div class="card-detail">
-                            <h5>O que você vai encontrar:</h5>
-                            <ul>
-                                <li>Protocolos Welfare Quality®, AWIN, e normas brasileiras (MAPA, CONCEA)</li>
-                                <li>Indicadores: lesões corporais, claudicação, condição corporal, comportamento</li>
-                                <li>Enriquecimento ambiental: materiais manipuláveis, substratos, objetos</li>
-                                <li>Manejo humanizado: desmame, transporte, abate, eutanasia</li>
-                                <li>Densidade de lotação ideal por categoria e sistema</li>
-                                <li>Programas de treinamento de equipe e auditoria interna</li>
-                                <li>Certificações: Certified Humane, Global GAP, bem-estar na cadeia</li>
-                            </ul>
-                            <div class="producer-tip">
-                                <strong>Dica para o produtor:</strong>
-                                <p>Observe os animais 15 min/dia sem interferir. Comportamentos anormais (morder cauda, bicar penas, estereotipias) aparecem antes das perdas produtivas. Registre com fotos/vídeos - isso vira evidência para certificação e melhora a conversa com o técnico.</p>
-                            </div>
-                            <button class="action-btn-inline" onclick="sendSpecificPrompt('bemestar')">Quero avaliar o bem-estar na minha propriedade</button>
-                        </div>
-                    </div>
-
-                    <div class="suggestion-card" data-category="tecnologias" data-prompt="Quais tecnologias de precisão (sensores, IoT, IA, monitoramento remoto) podem ser aplicadas no manejo e produção animal para melhorar eficiência e bem-estar?">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                            <path d="M6.5 6.5v0M17.5 6.5v0M6.5 17.5v0M17.5 17.5v0"/>
-                        </svg>
-                        <h4>Tecnologias para Produção & Manejo</h4>
-                        <p class="card-summary">Sensores, IoT, IA, monitoramento remoto, agricultura de precisão animal</p>
-                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-                        <div class="card-detail">
-                            <h5>O que você vai encontrar:</h5>
-                            <ul>
-                                <li>Sensores: temperatura, umidade, NH₃, CO₂, peso automático, água/ração</li>
-                                <li>Câmeras com visão computacional: contagem, comportamento, escore corporal</li>
-                                <li>Microfones e IA: detecção de tosse, estresse, vocalizações anormais</li>
-                                <li>Identificação eletrônica (RFID, UHF): rastreabilidade individual</li>
-                                <li>Plataformas cloud: dashboards, alertas no WhatsApp/Telegram, relatórios</li>
-                                <li>Robótica: alimentação de precisão, coleta de ovos, limpeza</li>
-                                <li>Integração com controladores climáticos existentes (retrofit)</li>
-                            </ul>
-                            <div class="producer-tip">
-                                <strong>Dica para o produtor:</strong>
-                                <p>Não compre "fazenda inteligente" completa de uma vez. Comece com 1 sensor de temperatura/umidade por setor + alerta no celular (custo ~R$ 200-400/setor). Depois de 30 dias de dados, você sabe exatamente onde investir. Evite sistemas que não deixam você exportar seus próprios dados.</p>
-                            </div>
-                            <button class="action-btn-inline" onclick="sendSpecificPrompt('tecnologias')">Quero saber por onde começar na minha granja</button>
-                        </div>
-                    </div>
-
-                    <div class="suggestion-card" data-category="cartilhas" data-prompt="Preciso gerar uma cartilha técnica com as soluções finais para [tema específico]. Como estruturar: linguagem acessível, base científica, recomendações práticas, checklist de implementação e referências?">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H6a3.375 3.375 0 00-3.375 3.375v11.25A3.375 3.375 0 006 21.75h12a3.375 3.375 0 003.375-3.375V11.25a3.375 3.375 0 00-3.375-3.375h-1.5"/>
-                        </svg>
-                        <h4>Gerar Cartilhas Técnicas</h4>
-                        <p class="card-summary">Estrutura pronta: linguagem simples, ciência aplicada, checklists, referências</p>
-                        <span class="expand-indicator">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-                        <div class="card-detail">
-                            <h5>Estrutura da cartilha que você recebe:</h5>
-                            <ul>
-                                <li>Capa com título atrativo, logotipo, versão, data</li>
-                                <li>Sumário visual com ícones por seção</li>
-                                <li>"Por que isso importa?" - contexto em 3 parágrafos máx.</li>
-                                <li>Conceitos-chave explicados com analogias do dia a dia</li>
-                                <li>Passo a passo ilustrado (fotos, diagramas, fluxogramas)</li>
-                                <li>Tabelas de referência rápida (valores ideais, cronogramas)</li>
-                                <li>Checklist de implementação: "O que fazer hoje / esta semana / este mês"</li>
-                                <li>Solução de problemas (FAQ): "Se X acontecer, faça Y"</li>
-                                <li>Referências confiáveis (Embrapa, universidades, normas oficiais)</li>
-                                <li>Contatos de apoio técnico e fornecedores homologados</li>
-                            </ul>
-                            <div class="producer-tip">
-                                <strong>Dica para o produtor:</strong>
-                                <p>Peça a cartilha com seu cenário real: "Tenho 2 galpões de 1200m², criação de frangos de corte, clima quente úmido, equipe de 3 pessoas". Quanto mais específico, mais útil. A cartilha vira seu manual de bolso e documento para auditoria/certificação.</p>
-                            </div>
-                            <button class="action-btn-inline" onclick="sendSpecificPrompt('cartilhas')">Quero gerar uma cartilha para meu caso</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer class="input-area">
-            <div class="input-wrapper">
-                <div class="input-row">
-                    <div class="textarea-container">
-                        <textarea id="messageInput" placeholder="Digite sua mensagem..." rows="1" spellcheck="true"></textarea>
-                    </div>
-                    <div class="input-actions">
-                        <button class="icon-btn" id="attachBtn" title="Anexar arquivo">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                            </svg>
-                        </button>
-                        <button class="send-btn" id="sendBtn" disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <p class="input-hint">
-                    Pressione <kbd>Enter</kbd> para enviar · <kbd>Shift</kbd>+<kbd>Enter</kbd> para nova linha
-                </p>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        let isDark = localStorage.getItem('theme') !== 'light';
-        let isTyping = false;
-
-        const landing = document.getElementById('landing');
-        const chatContainer = document.getElementById('chatContainer');
-        const startBtn = document.getElementById('startChat');
-        const messagesArea = document.getElementById('messagesArea');
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const newChatBtn = document.getElementById('newChat');
-        const themeToggle = document.getElementById('themeToggle');
-        const suggestions = document.getElementById('suggestions');
-        const attachBtn = document.getElementById('attachBtn');
-
-        function init() {
-            applyTheme();
-            setupEventListeners();
-            autoResizeTextarea();
-            initFilterTabs();
-        }
-
-        function applyTheme() {
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            themeToggle.querySelector('.sun-icon').style.display = isDark ? 'block' : 'none';
-            themeToggle.querySelector('.moon-icon').style.display = isDark ? 'none' : 'block';
-        }
-
-        function setupEventListeners() {
-            startBtn.addEventListener('click', startChat);
-            newChatBtn.addEventListener('click', newChat);
-            themeToggle.addEventListener('click', toggleTheme);
-            sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keydown', handleKeydown);
-            messageInput.addEventListener('input', handleInput);
-            suggestions.addEventListener('click', handleSuggestion);
-            attachBtn.addEventListener('click', () => {
-                alert('Funcionalidade de anexo em desenvolvimento');
-            });
-        }
-
-        function startChat() {
-            landing.style.display = 'none';
-            chatContainer.classList.add('active');
-            messageInput.focus();
-        }
-
-        function newChat() {
-            if (confirm('Iniciar nova conversa? O histórico atual será limpo.')) {
-                clearMessages();
-                showWelcomeScreen();
-            }
-        }
-
-        function toggleTheme() {
-            isDark = !isDark;
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            applyTheme();
-        }
-
-        function handleKeydown(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                if (!sendBtn.disabled && !isTyping) {
-                    sendMessage();
-                }
-            }
-        }
-
-        function handleInput() {
-            const hasText = messageInput.value.trim().length > 0;
-            sendBtn.disabled = !hasText || isTyping;
-            autoResizeTextarea();
-        }
-
-        function autoResizeTextarea() {
-            messageInput.style.height = 'auto';
-            messageInput.style.height = Math.min(messageInput.scrollHeight, 200) + 'px';
-        }
-
-        function handleSuggestion(e) {
-            const card = e.target.closest('.suggestion-card');
-            if (card) {
-                const prompt = card.dataset.prompt;
-                messageInput.value = prompt;
-                handleInput();
-                hideWelcomeScreen();
-                sendMessage();
-            }
-        }
-
-        function sendMessage() {
-            const text = messageInput.value.trim();
-            if (!text || isTyping) return;
-
-            addMessage(text, 'user');
-            messageInput.value = '';
-            handleInput();
-            hideWelcomeScreen();
-
-            simulateResponse(text);
-        }
-
-        function addMessage(content, role) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-
-            const avatar = document.createElement('div');
-            avatar.className = `avatar ${role}`;
-            avatar.textContent = role === 'user' ? 'VOCÊ' : 'GZ';
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = formatMessage(content);
-
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'message-actions';
-            actionsDiv.innerHTML = `
-                <button class="action-btn" onclick="copyMessage(this)">Copiar</button>
-                <button class="action-btn" onclick="regenerateMessage(this)">Regenerar</button>
-            `;
-            contentDiv.appendChild(actionsDiv);
-
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(contentDiv);
-
-            messagesArea.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        function formatMessage(text) {
-            return text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/`(.+?)`/g, '<code>$1</code>')
-                .replace(/\n/g, '<br>');
-        }
-
-        function showTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'typing-indicator';
-            typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `
-                <div class="avatar assistant">GZ</div>
-                <div class="typing-dots">
-                    <span></span><span></span><span></span>
-                </div>
-            `;
-            messagesArea.appendChild(typingDiv);
-            scrollToBottom();
-        }
-
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
-        }
-
-        function simulateResponse(userMessage) {
-            isTyping = true;
-            sendBtn.disabled = true;
-            showTypingIndicator();
-
-            const delay = 800 + Math.random() * 1200;
-
-            setTimeout(() => {
-                hideTypingIndicator();
-
-                const lower = userMessage.toLowerCase();
-                let response = "";
-
-                // ENGENHARIA AGRÍCOLA & AMBIÊNCIA
-                if (lower.includes('ventila') || lower.includes('climatiza') || lower.includes('ambiênc') || lower.includes('estresse térmico') || lower.includes('conforto térmico') || lower.includes('temperatura') || lower.includes('umidade') || lower.includes('galpão') || lower.includes('instalaç') || lower.includes('exaustor') || lower.includes('ventilador') || lower.includes('resfriamento') || lower.includes('nebuliza') || lower.includes('aspers') || lower.includes('cortina') || lower.includes('inlet') || lower.includes('energia') || lower.includes('inversor')) {
-                    response = `**Solução direta pro seu galpão:**
-
-1. **Meça primeiro** — 3 termômetros min/max (R$ 30 cada): entrada, centro, saída. Anote 7 dias.
-2. **Se Δ entrada→saída > 3°C** → fluxo ruim. Ajuste inlets/cortinas antes de comprar equipamento.
-3. **Alvo de velocidade no bico/focinho:** frango terminação 2,5–3,5 m/s | suíno crescimento 1,5–2,0 m/s.
-4. **Curva rápida (frango corte):** 1–7d 33°C | 8–14d 30°C | 15–21d 27°C | 22–35d 24°C | 36+d 21°C.
-5. **Economia real:** inversores de frequência nos ventiladores cortam 30–40% energia (payback ~1 ano).
-6. **Resfriamento:** painel evaporativo + nebulização baixa 4–6°C efetivos. **Regra:** UR ≤ 75% senão piora.
-
-**Comece hoje:** termômetros + anotação. Em 1 semana você sabe exatamente onde mexer.
-
----
-
-*Base: Embrapa Suínos e Aves (2023), Czarick & Lacy UGA (2021), Tinôco USP/ESALQ (2020), Yanagi Jr. et al. (2022), Cobb/Ross (2022), Zhang et al. (2022).*`;
-                }
-                // BEM-ESTAR ANIMAL
-                else if (lower.includes('bem-estar') || lower.includes('bem estar') || lower.includes('welfare') || lower.includes('comportamento') || lower.includes('indicador') || lower.includes('protocolo') || lower.includes('enriquecimento') || lower.includes('densidade') || lower.includes('les') || lower.includes('claudica') || lower.includes('condição corporal') || lower.includes('manejo humanizado') || lower.includes('desmame') || lower.includes('transporte') || lower.includes('abate') || lower.includes('eutanasia') || lower.includes('certifica') || lower.includes('auditoria')) {
-                    response = `**Checklist prático de bem-estar (15 min/semana):**
-
-**O que olhar "olho no olho":**
-- **Suínos:** lesões cauda/orelha >15% = ação | claudicação | escore condição 1–5 | fuçam substrato?
-- **Aves:** bicar penas >5% = alerta | dermatite pata/peito | andar | vocalização estresse
-- **Bovinos:** locomoção 1–5 | lesões corpo | limpeza | comportamento cocho
-
-**Densidades máximas (evidência 2022/23):**
-- Frango: 33–35 kg/m² (controlado) / 28–30 kg/m² (aberto)
-- Suíno terminação: 0,9–1,0 m²/animal (100–120 kg)
-- Bovino confinamento: 12–15 m²/animal + sombreamento
-
-**Enriquecimento barato que funciona:**
-- Suínos: corrente com nó, madeira, corda, palha/serragem — **R$ 0,50/leitegado**
-- Aves: fardos palha, plataformas, objetos pendurados — **−40–60% bicagem**
-
-**Prova pra auditoria/certificação:** filme 2 min/dia no celular (mesmo horário). Em 30 dias tem vídeo-prova.
-
----
-
-*Base: Welfare Quality® Brasil/Embrapa (2022), MAPA IN 113/2020, Tahamtani et al. (2021), CONCEA (2023), AVMA (2020/23).*`;
-                }
-                // TECNOLOGIAS PARA PRODUÇÃO & MANEJO
-                else if (lower.includes('sensor') || lower.includes('iot') || lower.includes('inteligência artificial') || lower.includes('ia') || lower.includes('monitoramento') || lower.includes('precisão') || lower.includes('precisao') || lower.includes('câmera') || lower.includes('camera') || lower.includes('visão computacional') || lower.includes('visao computacional') || lower.includes('peso automático') || lower.includes('peso automatico') || lower.includes('rfid') || lower.includes('uhf') || lower.includes('rastreabilidade') || lower.includes('dashboard') || lower.includes('alerta') || lower.includes('whatsapp') || lower.includes('telegram') || lower.includes('robótica') || lower.includes('robotica') || lower.includes('retrofit') || lower.includes('controlador climático') || lower.includes('controlador climatic')) {
-                    response = `**Roteiro tecnológico por ROI (comece pelo 1):**
-
-1. **Temp/UR por setor + alerta WhatsApp** — R$ 200–400/setor (ESP32 + DHT22/AM2302). Detecta falha ventilador em **3 min** vs 2–4h no olho. **Payback: 1 lote.** (Embrapa 2023)
-2. **Balança automática (passagem/plataforma)** — amostra 10–20% lote/dia sem manejo. Ajusta ração, prevê abate, detecta doença **3–5 dias antes**. R$ 8–15 mil → retorno 2–3 lotes. (Rutten 2021, Embrapa 2022)
-3. **Medidor água/ração por linha** — sensor fluxo ultrassônico R$ 300–600. Vazamento bebedouro = prejuízo invisível. **Paga no 1º mês.** (Embrapa 2023)
-
-**Depois de 30–60 dias de dado, evolua:**
-4. **Câmera + IA (YOLOv8 + Raspberry Pi < R$ 2.000)** — aglomeração, aves caídas, comportamento. 92% acurácia vs humano. (Dorea 2022, Neves USP 2023)
-5. **Microfone + IA tosse** — alerta bronquite **48h antes** sintomas. (Guarino 2021, Silva UFV 2022)
-6. **RFID/UHF individual** — rastreabilidade nascimento→abate. Obrigatório exportação EU/China. (MAPA 2023)
-
-**Regra de ouro:** não compre sistema que **não exporta SEUS dados (CSV/JSON)**. Caixa preta de fornecedor = você refém.
-
----
-
-*Base: Embrapa (2023), Rutten et al. (2021), Dorea et al. (2022), Neves USP (2023), Guarino et al. (2021), Silva UFV (2022), MAPA (2023).*`;
-                }
-                // CARTILHAS TÉCNICAS
-                else if (lower.includes('cartilha') || lower.includes('manual') || lower.includes('guia') || lower.includes('checklist') || lower.includes('estrutura') || lower.includes('como fazer') || lower.includes('passo a passo') || lower.includes('implementação') || lower.includes('implementacao') || lower.includes('referência') || lower.includes('referencia') || lower.includes('linguagem simples') || lower.includes('acessível') || lower.includes('acessivel')) {
-                    response = `**Estrutura de cartilha que o funcionário USA (testada Embrapa/SENAR 2022/23):**
-
-1. **Capa:** título direto + logo + versão + QR pro PDF
-2. **Sumário visual (1 pág, ícones):** 6 passos máx.
-3. **"Por que importa" (3 parágrafos):** ex.: "1°C acima = 5g menos ração/dia = 150g abate = R$ 19,5 mil/lote de 20k aves"
-4. **Analogias:** "Inlet = janela do carro | Inversor = marcha"
-5. **Passo a passo COM SUAS FOTOS** (setas, círculos vermelhos no seu painel)
-6. **Tabela laminada na parede:** fase × temp × UR × vel. ar × % ventiladores
-7. **Checklist HOJE/SEMANA/MÊS** (☐ medir 3 pts | ☐ limpar painéis | ☐ calibrar sensores)
-8. **FAQ real:** "Quente mas ventilador ligado?" → inlets? cortinas? painéis? filtros?
-9. **Referências essenciais (4 máx.):** Embrapa, guia genético, MAPA, seu técnico (nome/WhatsApp)
-10. **Contatos:** técnico, vet, fornecedor (vendedor que atende), Embrapa/SENAR regional
-
-**Me manda seu cenário** (o que cria, m², clima, equipe, maior dor) que gero a sua pronta.
-
----
-
-*Base: Embrapa/SENAR Cartilhas Produtores (2022/23), FAO Communication Rural Development (2021), INEP/MEC Linguagem Simples (2020).*`;
-                }
-                // GERAL
-                else {
-                    response = `Sou especialista em **engenharia agrícola, ambiência, bem-estar, tecnologias e cartilhas** — focado no produtor brasileiro.
-
-**Me fala sua situação** (exemplos do dia a dia):
-- "Galpão 1200m² fica 5°C acima à tarde. Resolvo gastando pouco?"
-- "Como avalio bem-estar dos suínos sem auditor externo?"
-- "Sensor temp + alerta WhatsApp. Por onde começo?"
-- "Cartilha manejo creche pra 3 pessoas. Como faço?"
-
-**Respondo direto:** solução prática → base de pesquisa (ano no final).
-
-*Referências ativas: Embrapa (2023), MAPA (2020), Welfare Quality® Brasil (2022), Cobb/Ross/Aviagen (2022), USP/ESALQ/UFV/UFRGS (2020–23).*`;
-                }
-
-                addMessage(response, 'assistant');
-                isTyping = false;
-                sendBtn.disabled = messageInput.value.trim().length === 0;
-                messageInput.focus();
-            }, delay);
-        }
-
-        function hideWelcomeScreen() {
-            welcomeScreen.style.display = 'none';
-        }
-
-        function showWelcomeScreen() {
-            welcomeScreen.style.display = 'flex';
-        }
-
-        function clearMessages() {
-            const messages = messagesArea.querySelectorAll('.message, .typing-indicator');
-            messages.forEach(m => m.remove());
-        }
-
-        function scrollToBottom() {
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }
-
-        // Global functions for message actions
-        window.copyMessage = function(btn) {
-            const content = btn.closest('.message-content').innerText;
-            navigator.clipboard.writeText(content).then(() => {
-                btn.textContent = 'Copiado!';
-                setTimeout(() => btn.textContent = 'Copiar', 2000);
-            });
-        };
-
-        window.regenerateMessage = function(btn) {
-            const message = btn.closest('.message');
-            if (message.classList.contains('assistant') && !isTyping) {
-                const userMsg = message.previousElementSibling;
-                if (userMsg && userMsg.classList.contains('user')) {
-                    const text = userMsg.querySelector('.message-content').innerText;
-                    message.remove();
-                    userMsg.remove();
-                    simulateResponse(text);
-                }
-            }
-        };
-
-        // Send specific prompt from card detail buttons
-        window.sendSpecificPrompt = function(category) {
-            const prompts = {
-                engenharia: "Como otimizar sistemas de ventilação e climatização em instalações de suínos e aves para melhorar a ambiência e reduzir estresse térmico?",
-                bemestar: "Quais são as melhores práticas de bem-estar animal baseadas em evidências para sistemas de produção de suínos, aves e bovinos? Inclua protocolos de avaliação e indicadores comportamentais.",
-                tecnologias: "Quais tecnologias de precisão (sensores, IoT, IA, monitoramento remoto) podem ser aplicadas no manejo e produção animal para melhorar eficiência e bem-estar?",
-                cartilhas: "Preciso gerar uma cartilha técnica com as soluções finais para [tema específico]. Como estruturar: linguagem acessível, base científica, recomendações práticas, checklist de implementação e referências?"
-            };
-            const prompt = prompts[category] || prompts.engenharia;
-            messageInput.value = prompt;
-            handleInput();
-            hideWelcomeScreen();
-            sendMessage();
-        };
-
-        // Filter tabs functionality
-        function initFilterTabs() {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const cards = document.querySelectorAll('.suggestion-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    const filter = btn.dataset.filter;
-
-                    cards.forEach(card => {
-                        if (filter === 'all' || card.dataset.category === filter) {
-                            card.classList.remove('hidden');
-                            card.classList.remove('expanded');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-            });
-
-            // Expand/collapse cards
-            cards.forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.action-btn-inline')) return;
-                    if (e.target.closest('.expand-indicator')) return;
-
-                    cards.forEach(c => {
-                        if (c !== card) c.classList.remove('expanded');
-                    });
-
-                    card.classList.toggle('expanded');
-                });
-            });
-        }
-
-        // Init
-        init();
-    </script>
+ <main class="landing" id="landing"><button class="splash-button" id="startChat" type="button" aria-label="Iniciar conversa"><img src="pasted_file_Etp5v6_image.png" alt="Identidade visual GBAZP — ESALQ-USP, com animais de fazenda"></button></main>
+ <div class="chat-container" id="chatContainer"><header class="chat-header"><div class="header-left"><button class="icon-btn" id="newChat" title="Nova conversa"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg></button><div class="logo-small"><img src="pasted_file_Etp5v6_image.png" alt="GBAZP"></div><span class="header-title">GBAZP - CHAT</span></div><div class="header-actions"><button class="icon-btn theme-toggle" id="themeToggle" title="Alternar tema"><svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg><svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg></button></div></header><main class="messages-area" id="messagesArea"><div class="welcome-screen" id="welcomeScreen"><div class="welcome-logo"><img src="pasted_file_Etp5v6_image.png" alt="GBAZP"></div><h2>Como posso ajudar hoje?</h2><p>Faça perguntas, peça análises, crie conteúdo, programe ou apenas converse.</p><div class="suggestions" id="suggestions"><div class="suggestion-card" data-prompt="Explique computação quântica de forma simples"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><h4>Explicar conceitos</h4><p>Torne tópicos complexos fáceis de entender</p></div><div class="suggestion-card" data-prompt="Escreva um e-mail profissional para agendar uma reunião"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0 1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><h4>Escrever e-mails</h4><p>Rascunhe mensagens profissionais em segundos</p></div><div class="suggestion-card" data-prompt="Me ajude a depurar este código JavaScript"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h4>Ajuda com código</h4><p>Debug, refatoração e explicações técnicas</p></div><div class="suggestion-card" data-prompt="Faça um resumo dos pontos principais deste texto"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><h4>Resumir textos</h4><p>Extraia o essencial de artigos e documentos</p></div></div></div></main><footer class="input-area"><div class="input-wrapper"><div class="input-row"><div class="textarea-container"><textarea id="messageInput" placeholder="Digite sua mensagem..." rows="1" spellcheck="true"></textarea></div><div class="input-actions"><button class="icon-btn" id="attachBtn" title="Anexar arquivo"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg></button><button class="send-btn" id="sendBtn" disabled><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg></button></div></div><p class="input-hint">Pressione <kbd>Enter</kbd> para enviar · <kbd>Shift</kbd>+<kbd>Enter</kbd> para nova linha</p></div></footer></div>
+ <script>
+ let isDark=localStorage.getItem('theme')!=='light',isTyping=false;const landing=document.getElementById('landing'),chatContainer=document.getElementById('chatContainer'),startBtn=document.getElementById('startChat'),messagesArea=document.getElementById('messagesArea'),welcomeScreen=document.getElementById('welcomeScreen'),messageInput=document.getElementById('messageInput'),sendBtn=document.getElementById('sendBtn'),newChatBtn=document.getElementById('newChat'),themeToggle=document.getElementById('themeToggle'),suggestions=document.getElementById('suggestions'),attachBtn=document.getElementById('attachBtn');
+
+ /* ============================================================
+    BASE DE CONHECIMENTO ACADÊMICA (embarcada)
+    Fontes: dissertação de mestrado "ZOOMÓTICA" (Sousa, 2026, ESALQ/USP)
+            e documentos de pós-graduação ESALQ/USP (ficha de autodepósito, banca).
+    Cada entrada: id, título, campo, texto (base acadêmica) e fonte.
+  ============================================================ */
+ const KB = [
+  {
+   id:'k_zoomotic',
+   campo:'Conceito central',
+   titulo:'Zoomótica',
+   texto:'Zoomótica é um campo aplicado que integra sensoriamento, modelagem e automação da ambiência para gerir o bem-estar do coletivo animal de forma contínua e sistêmica. Nasceu para superar o monitoramento pontual ou de alto custo na produção animal tropical.',
+   fonte:'Sousa (2026), Dissertação de Mestrado, ESALQ/USP — Resumo'
+  },
+  {
+   id:'k_thi',
+   campo:'Bem-estar / estresse térmico',
+   titulo:'Índice de Temperatura e Umidade (THI)',
+   texto:'O THI combina temperatura e umidade relativa para estimar o conforto térmico dos animais. Em ambientes tropicais, o estresse térmico é uma restrição permanente. A dissertação discute as formulações do THI, a variabilidade de seus limiares e suas limitações, e propõe integrar o índice a tecnologias de pecuária de precisão e protocolos de bem-estar.',
+   fonte:'Sousa (2026), Cap. 3'
+  },
+  {
+   id:'k_welfare',
+   campo:'Protocolos de bem-estar',
+   titulo:'Welfare Quality® / AWIN / ClassyFarm',
+   texto:'São protocolos formais de avaliação do bem-estar animal. A revisão discute criticamente o Welfare Quality®, o AWIN e o ClassyFarm, e mostra que a articulação entre tecnologias de monitoramento contínuo e esses protocolos, em escala coletiva, ainda é rara na literatura.',
+   fonte:'Sousa (2026), Cap. 3'
+  },
+  {
+   id:'k_modelos',
+   campo:'Modelos de bem-estar',
+   titulo:'Cinco Liberdades e Cinco Domínios',
+   texto:'São modelos conceituais de bem-estar animal. As Cinco Liberdades focam em necessidades básicas (água, alimento, abrigo, ausência de dor/doença, ausência de medo/estresse). Os Cinco Domínios organizam o bem-estar em cinco domínios (nutrição, moradia, saúde, comportamento e estado mental) e integram o afeto animal.',
+   fonte:'Sousa (2026), Cap. 3'
+  },
+  {
+   id:'k_this',
+   campo:'Tecnologia / IoT',
+   titulo:'THIS — IoT Thermohygrometer System',
+   texto:'Dispositivo termohigrométrico de baixo consumo baseado na placa ESP32-C6 Super Mini e no sensor digital DHT22, integrado a uma planilha Google Sheets que funciona como registrador, interface de configuração remota e painel de decisão para o produtor. Foi verificado em laboratório contra registradores Testo 174H e psicrômetro analógico e aplicado em campo (compost barn).',
+   fonte:'Sousa (2026), Cap. 4'
+  },
+  {
+   id:'k_plf',
+   campo:'Produção animal',
+   titulo:'Pecuária de precisão e bem-estar',
+   texto:'A produção animal em ambiente tropical opera sob restrição térmica permanente. A dissertação propõe integrar o monitoramento ambiental contínuo (THI) a tecnologias de pecuária de precisão e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica.',
+   fonte:'Sousa (2026), Resumo / Cap. 3'
+  },
+  {
+   id:'k_autdepos',
+   campo:'Pós-graduação / procedimento acadêmico',
+   titulo:'Ficha de autodeposição',
+   texto:'É a declaração em que o aluno autoriza o depósito do trabalho (dissertação/tese) e assegura que atende às Normas para Elaboração de Dissertações e Teses da ESALQ/USP vigentes. Declara também o cumprimento da exigência de submissão/publicação de artigo científico, quando exigida pelo programa, e informa se o documento foi submetido ao software de verificação de integridade indicado pela instituição.',
+   fonte:'Documento oficial ESALQ/USP — Ficha de autorização para depósito'
+  },
+  {
+   id:'k_banca',
+   campo:'Pós-graduação / procedimento acadêmico',
+   titulo:'Composição da Comissão Julgadora (banca)',
+   texto:'É o formulário para indicar os titulares e suplentes da banca de defesa/qualificação, com nome (sem abreviações), Nº USP, vínculo de vídeo e e-mail da instituição. Para defesa remota, é exigida anuência prévia da CPG, solicitada via formulário da instituição.',
+   fonte:'Documento oficial ESALQ/USP — Sugestão para composição da Comissão Julgadora'
+  },
+ ];
+
+ /* ============================================================
+    MOTOR DE RAZIOCINÃO (thinking model)
+    Víncula a pergunta à base acadêmica e produz resposta humana/simples.
+  ============================================================ */
+ function analyzeIntent(msg){
+  const m=msg.toLowerCase();
+  if(/explic|o que é|como funciona|conceito|defini[ãe]|zoomótica|thi|temperatura|umidade|estresse|térmico|welfare|awin|classyfarm|cinco liberdade|cinco domínio|this|esp32|dht22|iot|termohigrometr|preciva|pecuária|precisão|bovino|leite/i.test(m)) return 'academic';
+  if(/banca|comiss[aã]o|autodep[os]ósito|dep[o]sito|norma|esalq|usp|resolu[çã]o|copgr|ficha|comiss[jú]lga/i.test(m)) return 'procedure';
+  return 'general';
+ }
+ function matchKB(intent,msg){
+  const m=msg.toLowerCase();
+  const hits=KB.filter(k=>{
+   const hay=(k.titulo+' '+(k.campo||'')+' '+(k.texto||'')+' '+(k.fonte||'')).toLowerCase();
+   return hay.includes('zoomótica')&&/zoomótica|ambiente|bem-estar|sensori/i.test(m) ? true :
+          hay.includes('thi')&&/thi|temperatura|umidade|estresse|térmico/i.test(m) ? true :
+          hay.includes('welfare')||hay.includes('awin')||hay.includes('classyfarm')||/welfare|awin|classyfarm|cinco/i.test(m) ? true :
+          hay.includes('this')||hay.includes('esp32')||hay.includes('dht22')||/this|esp32|dht22|iot|termohigrometr/i.test(m) ? true :
+          hay.includes('pecuária')||hay.includes('precisão')||/preciva|pecu[áa]ria|precis[ião]o|bovino|leite/i.test(m) ? true :
+          /banca|comiss|autodep|dep[o]sito|norma|esalq|usp|resolu|copgr|ficha/i.test(m) && (hay.includes('autdepos')||hay.includes('banca')||hay.includes('esalq')||hay.includes('usp')) ? true : false;
+  });
+  if(hits.length) return hits;
+  // fallback general: return the most relevant academic entries
+  return KB.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria/i.test(k.texto.toLowerCase()));
+ }
+ function think(userMessage){
+  const intent=analyzeIntent(userMessage);
+  const hits=matchKB(intent,userMessage);
+  const steps=[];
+  // 1. Analise a pergunta
+  steps.push({n:1,t:'Analisei sua pergunta.',d:'Você quer saber sobre <strong>'+(intent==='procedure'?'um procedimento acadêmico da ESALQ/USP':'um tema acadêmico')+'</strong>. Intent identificado: <strong>'+intent+'</strong>.',src:''});
+  // 2. Recupera base acadêmica
+  steps.push({n:2,t:'Recuperei a base acadêmica.',d:'Em minha base de conhecimento (embarcada na dissertação e nos documentos oficiais da ESALQ/USP), encontrei <strong>'+hits.length+'</strong> registro(s) relacionado(s).',src:''});
+  // 3. Conecta pergunta -> base
+  const link=hits.map(h=>'• <strong>'+h.titulo+'</strong> — '+h.texto).join('\n');
+  steps.push({n:3,t:'Conectei a pergunta à base acadêmica.',d:'A resposta é embasada nos registros acadêmicos abaixo:',src:''});
+  // 4. Resposta simples
+  steps.push({n:4,t:'Resposta (linguagem humana e simples).',d:'',src:''});
+  return {intent,hits,steps,link};
+ }
+ function formatMessage(text){
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+   .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+   .replace(/\*(.+?)\*/g,'<em>$1</em>')
+   .replace(/`(.+?)`/g,'<code>$1</code>')
+   .replace(/\n/g,'<br>');
+ }
+ function buildAnswer(intent,hits,userMessage){
+  const m=userMessage.toLowerCase();
+  // procedure answers
+  if(intent==='procedure'){
+   if(/autodep|dep[o]sito|ficha/i.test(m)){
+    return 'A <strong>ficha de autodeposição</strong> é a declaração em que você, como aluno, autoriza o depósito da dissertação/tese e afirma que o trabalho atende às Normas para Elaboração de Dissertações e Teses da ESALQ/USP vigentes. Você também declara que cumpriu a exigência de submissão/publicação de artigo científico (quando exigida pelo programa) e informa se o documento foi submetido ao software de verificação de integridade indicado pela instituição. A ficha oficial, com o número de CDD da biblioteca, deve ser solicitada por <strong>fichacat.esalq@usp.br</strong> antes do depósito da versão definitiva.';
+   }
+   if(/banca|comiss/i.test(m)){
+    return 'A <strong>composição da Comissão Julgadora (banca)</strong> é informada por formulário oficial, listando titulares e suplentes com nome (sem abreviações), Nº USP, vínculo de vídeo e e-mail da instituição. Se a defesa for <strong>remota</strong>, é exigida anuência prévia da CPG, solicitada via formulário disponível na instituição.';
+   }
+   return 'Sou um assistente acadêmico da ESALQ/USP. Posso ajudar com procedimentos de pós-graduação (ficha de autodeposição, composição da banca, normas da Resolução CoPGr 6018) e com conteúdos da dissertação "ZOOMÓTICA". Em que posso ajudar?';
+  }
+  // academic content answers
+  if(/zoomótica/i.test(m)){
+   return 'A <strong>Zoomótica</strong> é um campo aplicado que integra sensoriamento, modelagem e automação da ambiência para gerir o bem-estar do coletivo animal de forma contínua e sistêmica. Em termos simples: usa sensores e tecnologia para acompanhar o ambiente dos animais (temperatura, umidade) e, com isso, tomar decisões que melhorem o bem-estar do rebanho de forma contínua, não apenas em avaliações pontuais. Fonte: Sousa (2026), Dissertação de Mestrado, ESALQ/USP.';
+  }
+  if(/thi|temperatura|umidade|estresse|térmico/i.test(m)){
+   return 'O <strong>Índice de Temperatura e Umidade (THI)</strong> combina temperatura e umidade relativa para estimar se os animais estão confortáveis térmicos. Em regiões tropicais, o estresse térmico é uma restrição permanente na produção animal. A dissertação propõe monitorar esse índice continuamente (com o dispositivo THIS) e integrá-lo a tecnologias de pecuária de precisão e protocolos de bem-estar, como o Welfare Quality®. Fonte: Sousa (2026), Cap. 3.';
+  }
+  if(/welfare|awin|classyfarm|cinco/i.test(m)){
+   return 'Existem protocolos formais de avaliação do bem-estar animal, como o <strong>Welfare Quality®</strong>, o <strong>AWIN</strong> e o <strong>ClassyFarm</strong>, além dos modelos das <strong>Cinco Liberdades</strong> e dos <strong>Cinco Domínios</strong>. As Cinco Liberdades focam em necessidades básicas dos animais; os Cinco Domínios organizam o bem-estar em nutrição, moradia, saúde, comportamento e estado mental. A dissertação mostra que unir essas abordagens ao monitoramento contínuo da ambiência ainda é pouco explorado na literatura. Fonte: Sousa (2026), Cap. 3.';
+  }
+  if(/this|esp32|dht22|iot|termohigrometr/i.test(m)){
+   return 'O <strong>THIS (IoT Thermohygrometer System)</strong> é um dispositivo termohigrométrico de baixo consumo baseado na placa <strong>ESP32-C6 Super Mini</strong> e no sensor digital <strong>DHT22</strong>, integrado a uma planilha Google Sheets que funciona como registrador, interface de configuração remota e painel de decisão para o produtor. Foi verificado em laboratório contra registradores Testo 174H e psicrômetro analógico e aplicado em campo (compost barn). Fonte: Sousa (2026), Cap. 4.';
+  }
+  if(/preciva|pecuária|precisão|bovino|leite/i.test(m)){
+   return 'Na <strong>bovinocultura de leite</strong> em ambiente tropical, o estresse térmico é constante. A proposta é integrar o monitoramento contínuo da ambiência (THI) a tecnologias de <strong>pecuária de precisão</strong> e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica. Fonte: Sousa (2026), Resumo.';
+  }
+  // general fallback grounded in academic work
+  return 'Sou um assistente acadêmico embasado na dissertação de mestrado <strong>"ZOOMÓTICA: tecnologias aplicadas à ambiência de forma coletiva com foco em qualidade de vida e bem-estar animal"</strong> (Rivaldo Geovane Miranda de Sousa, ESALQ/USP, 2026) e nos documentos oficiais de pós-graduação da ESALQ/USP. Posso explicar conceitos de Zoomótica, THI, protocolos de bem-estar animal (Welfare Quality®, AWIN, ClassyFarm, Cinco Liberdades/Cinco Domínios), o dispositivo THIS (ESP32 + DHT22) e procedimentos acadêmicos (ficha de autodeposição, banca, normas CoPGr 6018). Em que posso ajudar?';
+ }
+ function showThinking(steps){
+  const t=document.createElement('div'); t.className='thinking';
+  const av=document.createElement('div'); av.className='avatar assistant'; av.textContent='GZ';
+  const c=document.createElement('div'); c.className='thinking-content';
+  let html='';
+  steps.forEach((s,i)=>{
+   html+='<div class="thinking-step"><span class="n">'+(i+1)+'.</span><strong>'+s.t+'</strong><br>'+(s.d?formatMessage(s.d):'')+'</div>';
+  });
+  c.innerHTML=html;
+  t.appendChild(av); t.appendChild(c);
+  messagesArea.appendChild(t);
+  scrollToBottom();
+  return t;
+ }
+ function finishThinking(el,answer,sources){
+  el.remove();
+  addMessage(answer,'assistant');
+  if(sources){
+   const s=document.createElement('div'); s.className='message assistant';
+   const av=document.createElement('div'); av.className='avatar assistant'; av.textContent='GZ';
+   const c=document.createElement('div'); c.className='message-content';
+   c.innerHTML='<strong>Fontes acadêmicas:</strong><br>'+sources;
+   s.appendChild(av); s.appendChild(c);
+   messagesArea.appendChild(s);
+  }
+  scrollToBottom();
+ }
+ function thinkingResponse(userMessage){
+  isTyping=true; sendBtn.disabled=true;
+  const {intent,hits,steps,link}=think(userMessage);
+  // show thinking block with steps (including the answer step placeholder)
+  const thinkingEl=showThinking(steps);
+  // replace step 4 with the actual answer after a short pause (simulated thinking)
+  setTimeout(()=>{
+   const answer=buildAnswer(intent,hits,userMessage);
+   const sources=hits.map(h=>'• '+h.titulo+' — '+h.fonte).join('<br>');
+   // update the last step (answer) to show the real answer content, then convert block to message
+   finishThinking(thinkingEl, answer, sources);
+   isTyping=false;
+   sendBtn.disabled=messageInput.value.trim().length===0;
+   messageInput.focus();
+  },600);
+ }
+ function init(){applyTheme();setupEventListeners();autoResizeTextarea()}
+ function applyTheme(){document.documentElement.setAttribute('data-theme',isDark?'dark':'light');themeToggle.querySelector('.sun-icon').style.display=isDark?'block':'none';themeToggle.querySelector('.moon-icon').style.display=isDark?'none':'block'}
+ function setupEventListeners(){startBtn.addEventListener('click',startChat);newChatBtn.addEventListener('click',newChat);themeToggle.addEventListener('click',toggleTheme);sendBtn.addEventListener('click',sendMessage);messageInput.addEventListener('keydown',handleKeydown);messageInput.addEventListener('input',handleInput);suggestions.addEventListener('click',handleSuggestion);attachBtn.addEventListener('click',()=>alert('Funcionalidade de anexo em desenvolvimento'))}
+ function startChat(){landing.style.display='none';chatContainer.classList.add('active');messageInput.focus()}
+ function newChat(){if(confirm('Iniciar nova conversa? O histórico atual será limpo.')){clearMessages();showWelcomeScreen()}}
+ function toggleTheme(){isDark=!isDark;localStorage.setItem('theme',isDark?'dark':'light');applyTheme()}
+ function handleKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!sendBtn.disabled&&!isTyping)sendMessage()}}
+ function handleInput(){const hasText=messageInput.value.trim().length>0;sendBtn.disabled=!hasText||isTyping;autoResizeTextarea()}
+ function autoResizeTextarea(){messageInput.style.height='auto';messageInput.style.height=Math.min(messageInput.scrollHeight,200)+'px'}
+ function handleSuggestion(e){const card=e.target.closest('.suggestion-card');if(card){messageInput.value=card.dataset.prompt;handleInput();sendMessage()}}
+ function sendMessage(){const text=messageInput.value.trim();if(!text||isTyping)return;addMessage(text,'user');messageInput.value='';handleInput();hideWelcomeScreen();thinkingResponse(text)}
+ function addMessage(content,role){const messageDiv=document.createElement('div');messageDiv.className=`message ${role}`;const avatar=document.createElement('div');avatar.className=`avatar ${role}`;avatar.textContent=role==='user'?'VOCÊ':'GZ';const contentDiv=document.createElement('div');contentDiv.className='message-content';contentDiv.innerHTML=formatMessage(content);const actionsDiv=document.createElement('div');actionsDiv.className='message-actions';actionsDiv.innerHTML='<button class="action-btn" onclick="copyMessage(this)">Copiar</button><button class="action-btn" onclick="regenerateMessage(this)">Regenerar</button>';contentDiv.appendChild(actionsDiv);messageDiv.appendChild(avatar);messageDiv.appendChild(contentDiv);messagesArea.appendChild(messageDiv);scrollToBottom()}
+ function showTypingIndicator(){const d=document.createElement('div');d.className='typing-indicator';d.id='typingIndicator';d.innerHTML='<div class="avatar assistant">GZ</div><div class="typing-dots"><span></span><span></span><span></span></div>';messagesArea.appendChild(d);scrollToBottom()}
+ function hideTypingIndicator(){const i=document.getElementById('typingIndicator');if(i)i.remove()}
+ function hideWelcomeScreen(){welcomeScreen.style.display='none'}
+ function showWelcomeScreen(){welcomeScreen.style.display='flex'}
+ function clearMessages(){messagesArea.querySelectorAll('.message,.typing-indicator,.thinking').forEach(m=>m.remove())}
+ function scrollToBottom(){messagesArea.scrollTop=messagesArea.scrollHeight}
+ window.copyMessage=function(btn){const content=btn.closest('.message-content').innerText;navigator.clipboard.writeText(content).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar',2000)})};
+ window.regenerateMessage=function(btn){const message=btn.closest('.message');if(message.classList.contains('assistant')&&!isTyping){const userMsg=message.previousElementSibling;if(userMsg&&userMsg.classList.contains('user')){const text=userMsg.querySelector('.message-content').innerText;message.remove();userMsg.remove();thinkingResponse(text)}}};
+ init();
+ </script>
 </body>
 </html>
