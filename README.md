@@ -99,7 +99,7 @@ MIT - Use livremente para projetos pessoais, educacionais ou comerciais.
 Desenvolvido para dataloggertiete-hub
 ## GBAZP Chat com busca acadêmica e modelo aberto
 
-A interface em `GBAZP-CHAT/index.html` agora usa `academic_chat_api.py` em vez de respostas simuladas. O servidor executa um fluxo RAG: consulta primeiro o [OpenAlex](https://openalex.org/) (diretório acadêmico aberto, com DOI, periódico, autores e instituições), complementa com [Crossref](https://www.crossref.org/) quando necessário e envia somente esse contexto ao modelo local. A resposta mostra links para a fonte original e para o registro OpenAlex.
+A interface em `GBAZP-CHAT/index.html` agora usa `academic_chat_api.py` em vez de respostas simuladas. O servidor executa um fluxo RAG: consulta o [OpenAlex](https://openalex.org/) (diretório acadêmico aberto, com DOI, periódico, autores, instituições e resumo), aplica um filtro de escopo para ciência animal e envia somente trabalhos pertinentes ao modelo local. Consultas fora de ciência e tecnologia animal são recusadas, e o sistema não preenche lacunas com fontes genéricas. A resposta mostra links para a fonte original e para o registro OpenAlex.
 
 O modelo não é fixado na aplicação. O padrão é o [Ollama](https://ollama.com/) com `qwen2.5:7b`, mas também funcionam vLLM e LocalAI por serem compatíveis com a API OpenAI:
 
