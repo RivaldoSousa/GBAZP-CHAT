@@ -167,6 +167,41 @@
    texto:'É o formulário para indicar os titulares e suplentes da banca de defesa/qualificação, com nome (sem abreviações), Nº USP, vínculo de vídeo e e-mail da instituição. Para defesa remota, é exigida anuência prévia da CPG, solicitada via formulário da instituição.',
    fonte:'Documento oficial ESALQ/USP — Sugestão para composição da Comissão Julgadora'
   },
+  {
+   id:'k_suino_peso',
+   campo:'Ciência da produção animal / suinocultura',
+   titulo:'Peso e ganho do porco (leitão)',
+   texto:'O peso do leitão varia com raça, ração e saúde. Por volta dos 25 dias (perto do desmame), um leitão bem manejado costuma pesar entre 6 e 8 kg. O acompanhamento do ganho de peso e da saúde (sem diarreia, ativo, comendo bem) é o melhor indicador de que o manejo está correto.',
+   fonte:'Embrapa Suínos e Aves — manuais de suinocultura; literatura de produção animal'
+  },
+  {
+   id:'k_calor_pratico',
+   campo:'Ciência da produção animal / ambiência',
+   titulo:'Calor: sombra, água e vento',
+   texto:'No calor, o animal come menos, ganha menos peso e pode adoecer. As medidas simples e eficazes são: sombra, água fresca à vontade e ventilação (vento/abanadores). Isso reduz o estresse térmico e mantém o consumo e o ganho de peso.',
+   fonte:'Embrapa / ESALQ-USP — ambiência e estresse térmico; Sousa (2026), Cap. 3'
+  },
+  {
+   id:'k_agua',
+   campo:'Ciência da produção animal / manejo',
+   titulo:'Água limpa à vontade',
+   texto:'Água limpa e fresca, disponível o tempo todo, é essencial. A falta de água reduz o consumo de ração, o ganho de peso e a produção de leite, e aumenta o risco de doenças. Bebedouros devem ser limpos e em número suficiente para o lote.',
+   fonte:'Embrapa / literatura de manejo e nutrição animal'
+  },
+  {
+   id:'k_racao',
+   campo:'Ciência da produção animal / nutrição',
+   titulo:'Ração certa para cada idade',
+   texto:'Cada fase do animal (cria, recria, engorda, lactação) pede uma ração diferente, com proteína e energia adequadas. Ração errada ou estragada reduz o ganho e pode causar doença. Ofereça ração de qualidade, na quantidade certa e sempre com água.',
+   fonte:'Embrapa / ESALQ-USP — nutrição animal; literatura de produção animal'
+  },
+  {
+   id:'k_sanidade',
+   campo:'Ciência da produção animal / sanidade',
+   titulo:'Saúde: vacina, verme e observação',
+   texto:'Animal doente come menos e ganha menos. Vacinação em dia, controle de vermes e observação diária (olho vivo, sem diarreia, sem tosse, comendo bem) evitam perdas. Ao notar sinal de doença, isole o animal e chame o veterinário.',
+   fonte:'Embrapa / literatura de sanidade animal; orientação veterinária'
+  },
  ];
 
  /* ============================================================
@@ -174,6 +209,53 @@
     SEMPRE busca nas fontes acadêmicas e apresenta de forma simples e clara.
     Fluxo: pergunta -> analise intent -> busca base acadêmica -> conecta -> resposta simples com fonte.
   ============================================================ */
+ /* ============================================================
+    INTERPRETAÇÃO DA PERGUNTA EM LINGUAGEM RURAL
+    Entende termos do campo (porco/proco, calor, ração, peso...) e
+    reescreve a pergunta de forma simples, para ajustar a busca e a resposta.
+  ============================================================ */
+ function interpretQuestion(msg){
+  const m=msg.toLowerCase();
+  const animais=[
+   {re:/porco|proco|su[ií]no|leit[aã]o|porca|baço/,tema:'porco (suíno)'},
+   {re:/vaca|boi|bovino|gado|novilha|bezerro|leiteira/,tema:'gado (bovino)'},
+   {re:/galinha|frango|ave|pinto|poedeira/,tema:'ave (galinha/frango)'},
+   {re:/ovelha|cordeiro|ovino|cabra|bode|cabrito|caprino/,tema:'ovelha/cabra'}
+  ];
+  let animal='';
+  for(const a of animais){ if(a.re.test(m)){animal=a.tema;break;} }
+  let assunto='';
+  if(/peso|quilo|kg|engorda|ganho|cresce|tamanho|dias|idade/.test(m))assunto='peso e ganho de peso';
+  else if(/calor|quente|sol|ver[aã]o|sombra|vento|ventila|aban|fresco/.test(m))assunto='calor e conforto (sombra, água, vento)';
+  else if(/[áa]gua|beber|sede/.test(m))assunto='água';
+  else if(/ra[çc][aã]o|comida|comer|aliment|fome/.test(m))assunto='ração e alimentação';
+  else if(/doente|doen[çc]a|rem[eé]dio|vacina|sanidade|verme/.test(m))assunto='saúde e sanidade';
+  let plain='';
+  if(animal&&assunto)plain='Entendi: você quer saber sobre <strong>'+assunto+'</strong> do <strong>'+animal+'</strong>.';
+  else if(assunto)plain='Entendi: você quer saber sobre <strong>'+assunto+'</strong>.';
+  else if(animal)plain='Entendi: você quer saber sobre o manejo do <strong>'+animal+'</strong>.';
+  return {animal,assunto,plain};
+ }
+ /* Resposta curta, simples e objetiva para o público rural (com fonte acadêmica). */
+ function ruralSimpleAnswer(m,hits){
+  const get=id=>hits.find(k=>k.id===id)||hits[0];
+  if(/porco|proco|su[ií]no|leit[aã]o|porca/.test(m)&&/peso|quilo|kg|engorda|ganho|dias|idade|tamanho/.test(m)){
+   return 'Um porquinho (leitão) com cerca de 25 dias costuma pesar entre <strong>6 e 8 kg</strong>. O peso muda com a raça, a ração e a saúde. O mais importante: ele estar comendo bem, ativo e sem diarreia.<br><strong>Na prática:</strong> pese de vez em quando para ver se está ganhando peso.<br><br><em>Fonte:</em> '+get('k_suino_peso').fonte;
+  }
+  if(/calor|quente|sol|ver[aã]o|sombra|vento|ventila|aban|fresco/.test(m)){
+   return 'No calor o animal come menos e ganha menos peso. O que resolve, de forma simples:<br>• <strong>Sombra</strong> no pasto ou no galpão;<br>• <strong>Água fresca</strong> à vontade;<br>• <strong>Vento/ventilação</strong> (ou abanador).<br>Isso tira o estresse do calor e mantém o animal comendo e ganhando peso.<br><br><em>Fonte:</em> '+get('k_calor_pratico').fonte;
+  }
+  if(/[áa]gua|beber|sede/.test(m)){
+   return 'Água <strong>limpa e fresca, o tempo todo</strong>. Sem água, o animal come menos, ganha menos peso e dá menos leite, e adoece mais. Deixe bebedouro limpo e em número suficiente para o lote.<br><br><em>Fonte:</em> '+get('k_agua').fonte;
+  }
+  if(/ra[çc][aã]o|comida|comer|aliment|fome/.test(m)){
+   return 'Cada idade pede uma ração diferente (cria, recria, engorda, vaca em leite). Ração errada ou estragada faz o animal ganhar menos e pode adoecer. Dê ração de qualidade, na quantidade certa, e sempre com água.<br><br><em>Fonte:</em> '+get('k_racao').fonte;
+  }
+  if(/doente|doen[çc]a|rem[eé]dio|vacina|sanidade|verme/.test(m)){
+   return 'Animal doente come menos e ganha menos. Mantenha <strong>vacina em dia</strong>, controle de vermes e observe todo dia (olho vivo, sem diarreia, sem tosse, comendo bem). Se notar doença, separe o animal e chame o veterinário.<br><br><em>Fonte:</em> '+get('k_sanidade').fonte;
+  }
+  return null; // não é tema rural prático; segue para resposta acadêmica
+ }
  function analyzeIntent(msg){
   const m=msg.toLowerCase();
   if(/explic|o que é|como funciona|conceito|defini[ãe]|zoomótica|thi|temperatura|umidade|estresse|térmico|welfare|awin|classyfarm|cinco liberdade|cinco domínio|this|esp32|dht22|iot|termohigrometr|preciva|pecuária|precisão|bovino|leite|bem-estar|ambiente|animal/i.test(m)) return 'academic';
@@ -208,10 +290,11 @@
  }
  function think(userMessage){
   const intent=analyzeIntent(userMessage);
+  const interp=interpretQuestion(userMessage);
   const hits=matchKB(userMessage);
   const steps=[];
-  // 1. Analise a pergunta
-  steps.push({n:1,t:'Analisei sua pergunta.',d:'Identifiquei o tema e o tipo de consulta. Intent: <strong>'+(intent==='procedure'?'procedimento acadêmico da ESALQ/USP':'conteúdo acadêmico (pesquisa)')+'</strong>.',src:''});
+  // 1. Analise e ajuste a pergunta (linguagem rural -> simples)
+  steps.push({n:1,t:'Entendi e ajustei sua pergunta.',d:(interp.plain||'Identifiquei o tema da sua consulta.')+' Tipo: <strong>'+(intent==='procedure'?'procedimento acadêmico da ESALQ/USP':'produção animal / pesquisa')+'</strong>.',src:''});
   // 2. Busca nas fontes acadêmicas
   steps.push({n:2,t:'Busquei nas fontes acadêmicas.',d:'Consultei a base de conhecimento embarcada — dissertação de mestrado "ZOOMÓTICA" (Sousa, 2026, ESALQ/USP) e documentos oficiais de pós-graduação da ESALQ/USP — e encontrei <strong>'+hits.length+'</strong> registro(s) relacionado(s) à sua pergunta.',src:''});
   // 3. Conecta pergunta -> base acadêmica
@@ -230,6 +313,9 @@
  }
  function buildAnswer(intent,hits,userMessage){
   const m=userMessage.toLowerCase();
+  // --- PÚBLICO RURAL: resposta curta, simples e objetiva (com fonte acadêmica) ---
+  const rural=ruralSimpleAnswer(m,hits);
+  if(rural) return rural;
   // --- PROCEDIMENTOS ACADÊMICOS (sempre com fonte oficial) ---
   if(intent==='procedure'){
    if(/autodep|dep[o]sito|ficha/i.test(m)){
