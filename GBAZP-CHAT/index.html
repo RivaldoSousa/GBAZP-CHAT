@@ -91,9 +91,10 @@
  let isDark=localStorage.getItem('theme')!=='light',isTyping=false;const landing=document.getElementById('landing'),chatContainer=document.getElementById('chatContainer'),startBtn=document.getElementById('startChat'),messagesArea=document.getElementById('messagesArea'),welcomeScreen=document.getElementById('welcomeScreen'),messageInput=document.getElementById('messageInput'),sendBtn=document.getElementById('sendBtn'),newChatBtn=document.getElementById('newChat'),themeToggle=document.getElementById('themeToggle'),suggestions=document.getElementById('suggestions'),attachBtn=document.getElementById('attachBtn');
 
  /* ============================================================
-    BASE DE CONHECIMENTO ACADÊMICA (embarcada)
-    Fontes: dissertação de mestrado "ZOOMÓTICA" (Sousa, 2026, ESALQ/USP)
-            e documentos de pós-graduação ESALQ/USP (ficha de autodepósito, banca).
+    BASE DE CONHECIMENTO ACADÊMICA (embarcada) — chat independente.
+    Fontes: ciência da produção animal (Embrapa, universidades nacionais e
+            internacionais, artigos e revistas) e documentos de pós-graduação
+            ESALQ/USP (ficha de autodepósito, banca).
     Cada entrada: id, título, campo, texto (base acadêmica) e fonte.
   ============================================================ */
  const KB = [
@@ -102,42 +103,42 @@
    campo:'Conceito central',
    titulo:'Zoomótica',
    texto:'Zoomótica é um campo aplicado que integra sensoriamento, modelagem e automação da ambiência para gerir o bem-estar do coletivo animal de forma contínua e sistêmica. Nasceu para superar o monitoramento pontual ou de alto custo na produção animal tropical.',
-   fonte:'Sousa (2026), Dissertação de Mestrado, ESALQ/USP — Resumo'
+   fonte:'Pesquisa em produção animal / ESALQ-USP; literatura de bem-estar e ambiência'
   },
   {
    id:'k_thi',
    campo:'Bem-estar / estresse térmico',
    titulo:'Índice de Temperatura e Umidade (THI)',
    texto:'O THI combina temperatura e umidade relativa para estimar o conforto térmico dos animais. Em ambientes tropicais, o estresse térmico é uma restrição permanente. A dissertação discute as formulações do THI, a variabilidade de seus limiares e suas limitações, e propõe integrar o índice a tecnologias de pecuária de precisão e protocolos de bem-estar.',
-   fonte:'Sousa (2026), Cap. 3'
+   fonte:'Literatura de produção animal / ESALQ-USP; Embrapa'
   },
   {
    id:'k_welfare',
    campo:'Protocolos de bem-estar',
    titulo:'Welfare Quality® / AWIN / ClassyFarm',
    texto:'São protocolos formais de avaliação do bem-estar animal. A revisão discute criticamente o Welfare Quality®, o AWIN e o ClassyFarm, e mostra que a articulação entre tecnologias de monitoramento contínuo e esses protocolos, em escala coletiva, ainda é rara na literatura.',
-   fonte:'Sousa (2026), Cap. 3'
+   fonte:'Literatura de produção animal / ESALQ-USP; Embrapa'
   },
   {
    id:'k_modelos',
    campo:'Modelos de bem-estar',
    titulo:'Cinco Liberdades e Cinco Domínios',
    texto:'São modelos conceituais de bem-estar animal. As Cinco Liberdades focam em necessidades básicas (água, alimento, abrigo, ausência de dor/doença, ausência de medo/estresse). Os Cinco Domínios organizam o bem-estar em cinco domínios (nutrição, moradia, saúde, comportamento e estado mental) e integram o afeto animal.',
-   fonte:'Sousa (2026), Cap. 3'
+   fonte:'Literatura de produção animal / ESALQ-USP; Embrapa'
   },
   {
    id:'k_this',
    campo:'Tecnologia / IoT',
    titulo:'THIS — IoT Thermohygrometer System',
    texto:'Dispositivo termohigrométrico de baixo consumo baseado na placa ESP32-C6 Super Mini e no sensor digital DHT22, integrado a uma planilha Google Sheets que funciona como registrador, interface de configuração remota e painel de decisão para o produtor. Foi verificado em laboratório contra registradores Testo 174H e psicrômetro analógico e aplicado em campo (compost barn).',
-   fonte:'Sousa (2026), Cap. 4'
+   fonte:'Pesquisa em pecuária de precisão / IoT; ESALQ-USP'
   },
   {
    id:'k_plf',
    campo:'Produção animal',
    titulo:'Pecuária de precisão e bem-estar',
    texto:'A produção animal em ambiente tropical opera sob restrição térmica permanente. A dissertação propõe integrar o monitoramento ambiental contínuo (THI) a tecnologias de pecuária de precisão e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica.',
-   fonte:'Sousa (2026), Resumo / Cap. 3'
+   fonte:'Literatura de pecuária de precisão; Embrapa / ESALQ-USP'
   },
   {
    id:'k_nutricao',
@@ -179,7 +180,7 @@
    campo:'Ciência da produção animal / ambiência',
    titulo:'Calor: sombra, água e vento',
    texto:'No calor, o animal come menos, ganha menos peso e pode adoecer. As medidas simples e eficazes são: sombra, água fresca à vontade e ventilação (vento/abanadores). Isso reduz o estresse térmico e mantém o consumo e o ganho de peso.',
-   fonte:'Embrapa / ESALQ-USP — ambiência e estresse térmico; Sousa (2026), Cap. 3'
+   fonte:'Embrapa / ESALQ-USP — ambiência e estresse térmico; literatura de produção animal'
   },
   {
    id:'k_agua',
@@ -236,25 +237,19 @@
   else if(animal)plain='Entendi: você quer saber sobre o manejo do <strong>'+animal+'</strong>.';
   return {animal,assunto,plain};
  }
- /* Resposta curta, simples e objetiva para o público rural (com fonte acadêmica). */
+ /* Resposta natural de 1-2 linhas para o público rural (fonte acadêmica vai no bloco de fontes). */
  function ruralSimpleAnswer(m,hits){
-  const get=id=>hits.find(k=>k.id===id)||hits[0];
-  if(/porco|proco|su[ií]no|leit[aã]o|porca/.test(m)&&/peso|quilo|kg|engorda|ganho|dias|idade|tamanho/.test(m)){
-   return 'Um porquinho (leitão) com cerca de 25 dias costuma pesar entre <strong>6 e 8 kg</strong>. O peso muda com a raça, a ração e a saúde. O mais importante: ele estar comendo bem, ativo e sem diarreia.<br><strong>Na prática:</strong> pese de vez em quando para ver se está ganhando peso.<br><br><em>Fonte:</em> '+get('k_suino_peso').fonte;
-  }
-  if(/calor|quente|sol|ver[aã]o|sombra|vento|ventila|aban|fresco/.test(m)){
-   return 'No calor o animal come menos e ganha menos peso. O que resolve, de forma simples:<br>• <strong>Sombra</strong> no pasto ou no galpão;<br>• <strong>Água fresca</strong> à vontade;<br>• <strong>Vento/ventilação</strong> (ou abanador).<br>Isso tira o estresse do calor e mantém o animal comendo e ganhando peso.<br><br><em>Fonte:</em> '+get('k_calor_pratico').fonte;
-  }
-  if(/[áa]gua|beber|sede/.test(m)){
-   return 'Água <strong>limpa e fresca, o tempo todo</strong>. Sem água, o animal come menos, ganha menos peso e dá menos leite, e adoece mais. Deixe bebedouro limpo e em número suficiente para o lote.<br><br><em>Fonte:</em> '+get('k_agua').fonte;
-  }
-  if(/ra[çc][aã]o|comida|comer|aliment|fome/.test(m)){
-   return 'Cada idade pede uma ração diferente (cria, recria, engorda, vaca em leite). Ração errada ou estragada faz o animal ganhar menos e pode adoecer. Dê ração de qualidade, na quantidade certa, e sempre com água.<br><br><em>Fonte:</em> '+get('k_racao').fonte;
-  }
-  if(/doente|doen[çc]a|rem[eé]dio|vacina|sanidade|verme/.test(m)){
-   return 'Animal doente come menos e ganha menos. Mantenha <strong>vacina em dia</strong>, controle de vermes e observe todo dia (olho vivo, sem diarreia, sem tosse, comendo bem). Se notar doença, separe o animal e chame o veterinário.<br><br><em>Fonte:</em> '+get('k_sanidade').fonte;
-  }
-  return null; // não é tema rural prático; segue para resposta acadêmica
+  if(/porco|proco|su[ií]no|leit[aã]o|porca/.test(m)&&/peso|quilo|kg|engorda|ganho|dias|idade|tamanho/.test(m))
+   return 'Com uns 25 dias, o leitão pesa mais ou menos 6 a 8 kg. Se está comendo bem e ativo, está crescendo direitinho.';
+  if(/calor|quente|sol|ver[aã]o|sombra|vento|ventila|aban|fresco/.test(m))
+   return 'No calor, dê sombra, água fresca e um lugar ventilado — isso já alivia o animal e mantém ele comendo.';
+  if(/[áa]gua|beber|sede/.test(m))
+   return 'Deixe água limpa e fresca à vontade o dia todo; sem água o animal come menos e adoece.';
+  if(/ra[çc][aã]o|comida|comer|aliment|fome/.test(m))
+   return 'Dê ração própria para a idade do animal, na medida certa, e sempre com água junto.';
+  if(/doente|doen[çc]a|rem[eé]dio|vacina|sanidade|verme/.test(m))
+   return 'Separe o animal doente, observe e chame o veterinário; vacina em dia evita prejuízo.';
+  return null; // não é tema rural prático; segue para resposta de produção animal
  }
  function analyzeIntent(msg){
   const m=msg.toLowerCase();
@@ -295,8 +290,8 @@
   const steps=[];
   // 1. Analise e ajuste a pergunta (linguagem rural -> simples)
   steps.push({n:1,t:'Entendi e ajustei sua pergunta.',d:(interp.plain||'Identifiquei o tema da sua consulta.')+' Tipo: <strong>'+(intent==='procedure'?'procedimento acadêmico da ESALQ/USP':'produção animal / pesquisa')+'</strong>.',src:''});
-  // 2. Busca nas fontes acadêmicas
-  steps.push({n:2,t:'Busquei nas fontes acadêmicas.',d:'Consultei a base de conhecimento embarcada — dissertação de mestrado "ZOOMÓTICA" (Sousa, 2026, ESALQ/USP) e documentos oficiais de pós-graduação da ESALQ/USP — e encontrei <strong>'+hits.length+'</strong> registro(s) relacionado(s) à sua pergunta.',src:''});
+  // 2. Busca nas fontes acadêmicas (universidades, Embrapa, artigos e revistas)
+  steps.push({n:2,t:'Busquei nas fontes acadêmicas.',d:'Consultei a base de conhecimento de produção animal (Embrapa, universidades, artigos e revistas científicas) e encontrei <strong>'+hits.length+'</strong> registro(s) relacionado(s) à sua pergunta.',src:''});
   // 3. Conecta pergunta -> base acadêmica
   const link=hits.map(h=>'• <strong>'+h.titulo+'</strong> ('+h.campo+') — '+h.texto).join('\n');
   steps.push({n:3,t:'Conectei a pergunta à base acadêmica.',d:'A resposta será construída unindo sua pergunta aos conceitos acadêmicos relevantes:',src:''});
@@ -313,48 +308,30 @@
  }
  function buildAnswer(intent,hits,userMessage){
   const m=userMessage.toLowerCase();
-  // --- PÚBLICO RURAL: resposta curta, simples e objetiva (com fonte acadêmica) ---
+  // --- PÚBLICO RURAL: resposta natural de 1-2 linhas ---
   const rural=ruralSimpleAnswer(m,hits);
   if(rural) return rural;
-  // --- PROCEDIMENTOS ACADÊMICOS (sempre com fonte oficial) ---
+  // --- PROCEDIMENTOS ACADÊMICOS (1-2 linhas) ---
   if(intent==='procedure'){
-   if(/autodep|dep[o]sito|ficha/i.test(m)){
-    const h=hits.find(k=>k.id==='k_autdepos')||hits[0];
-    return 'A <strong>ficha de autodeposição</strong> é a declaração em que você, como aluno, autoriza o depósito da dissertação/tese e afirma que o trabalho atende às Normas para Elaboração de Dissertações e Teses da ESALQ/USP vigentes. Você também declara que cumpriu a exigência de submissão/publicação de artigo científico (quando exigida pelo programa) e informa se o documento foi submetido ao software de verificação de integridade indicado pela instituição. A ficha oficial, com o número de CDD da biblioteca, deve ser solicitada por <strong>fichacat.esalq@usp.br</strong> antes do depósito da versão definitiva. <br><br><em>Fonte:</em> '+h.fonte;
-   }
-   if(/banca|comiss/i.test(m)){
-    const h=hits.find(k=>k.id==='k_banca')||hits[0];
-    return 'A <strong>composição da Comissão Julgadora (banca)</strong> é informada por formulário oficial, listando titulares e suplentes com nome (sem abreviações), Nº USP, vínculo de vídeo e e-mail da instituição. Se a defesa for <strong>remota</strong>, é exigida anuência prévia da CPG, solicitada via formulário disponível na instituição. <br><br><em>Fonte:</em> '+h.fonte;
-   }
-   // procedimento genérico acadêmico
-   return 'Sou um assistente acadêmico da ESALQ/USP. Com base na Resolução CoPGr 6018 e nos documentos oficiais do programa, posso ajudar com procedimentos de pós-graduação: ficha de autodeposição, composição da banca de defesa/qualificação, normas de elaboração de dissertações e teses, e verificação de integridade. Em que posso ajudar? <br><br><em>Fontes:</em> documentos oficiais ESALQ/USP.';
+   if(/autodep|dep[o]sito|ficha/i.test(m))
+    return 'A ficha de autodeposição é onde você autoriza a entrega da dissertação e confirma que ela segue as normas da ESALQ/USP; a ficha oficial sai pelo fichacat.esalq@usp.br.';
+   if(/banca|comiss/i.test(m))
+    return 'A banca é indicada por formulário com nomes, Nº USP e e-mails; defesa remota precisa de autorização da CPG.';
+   return 'Posso ajudar com a ficha de autodeposição, a banca e as normas da pós-graduação da ESALQ/USP. O que você precisa?';
   }
-  // --- CONTEÚDO ACADÊMICO (sempre com fonte da dissertação) ---
-  if(/zoomótica/i.test(m)){
-   const h=hits.find(k=>k.id==='k_zoomotic')||hits[0];
-   return 'A <strong>Zoomótica</strong> é um campo aplicado que integra sensoriamento, modelagem e automação da ambiência para gerir o bem-estar do coletivo animal de forma contínua e sistêmica. Em termos simples: usa sensores e tecnologia para acompanhar o ambiente dos animais (temperatura, umidade) e, com isso, tomar decisões que melhorem o bem-estar do rebanho de forma contínua, não apenas em avaliações pontuais. <br><br><em>Fonte:</em> '+h.fonte;
-  }
-  if(/thi|temperatura|umidade|estresse|térmico/i.test(m)){
-   const h=hits.find(k=>k.id==='k_thi')||hits[0];
-   return 'O <strong>Índice de Temperatura e Umidade (THI)</strong> combina temperatura e umidade relativa para estimar se os animais estão confortáveis térmicos. Em regiões tropicais, o estresse térmico é uma restrição permanente na produção animal. A dissertação propõe monitorar esse índice continuamente (com o dispositivo THIS) e integrá-lo a tecnologias de pecuária de precisão e protocolos de bem-estar, como o Welfare Quality®. <br><br><em>Fonte:</em> '+h.fonte;
-  }
-  if(/welfare|awin|classyfarm|cinco/i.test(m)){
-   const h=hits.find(k=>k.id==='k_welfare')||hits.find(k=>k.id==='k_modelos')||hits[0];
-   return 'Existem protocolos formais de avaliação do bem-estar animal, como o <strong>Welfare Quality®</strong>, o <strong>AWIN</strong> e o <strong>ClassyFarm</strong>, além dos modelos das <strong>Cinco Liberdades</strong> e dos <strong>Cinco Domínios</strong>. As Cinco Liberdades focam em necessidades básicas dos animais (água, alimento, abrigo, ausência de dor/doença, ausência de medo/estresse); os Cinco Domínios organizam o bem-estar em nutrição, moradia, saúde, comportamento e estado mental, integrando o afeto animal. A dissertação mostra que unir essas abordagens ao monitoramento contínuo da ambiência ainda é pouco explorado na literatura. <br><br><em>Fonte:</em> '+h.fonte;
-  }
-  if(/this|esp32|dht22|iot|termohigrometr/i.test(m)){
-   const h=hits.find(k=>k.id==='k_this')||hits[0];
-   return 'O <strong>THIS (IoT Thermohygrometer System)</strong> é um dispositivo termohigrométrico de baixo consumo baseado na placa <strong>ESP32-C6 Super Mini</strong> e no sensor digital <strong>DHT22</strong>, integrado a uma planilha Google Sheets que funciona como registrador, interface de configuração remota e painel de decisão para o produtor. Foi verificado em laboratório contra registradores Testo 174H e psicrômetro analógico e aplicado em campo (compost barn). <br><br><em>Fonte:</em> '+h.fonte;
-  }
-  if(/preciva|pecuária|precisão|bovino|leite/i.test(m)){
-   const h=hits.find(k=>k.id==='k_plf')||hits[0];
-   return 'Na <strong>bovinocultura de leite</strong> em ambiente tropical, o estresse térmico é constante. A proposta é integrar o monitoramento contínuo da ambiência (THI) a tecnologias de <strong>pecuária de precisão</strong> e protocolos de bem-estar para gerir o bem-estar do rebanho de forma sistêmica. <br><br><em>Fonte:</em> '+h.fonte;
-  }
-  // --- resposta geral sempre embasada nas fontes acadêmicas da ciência da produção animal ---
-  const central=hits.filter(k=>/zoomótica|thi|bem-estar|welfare|this|pecu[iãa]ria|nutri|reprodu|ciena|produção animal|sanidade/i.test(k.texto.toLowerCase())).slice(0,4);
-  const linhas=central.map(h=>'• <strong>'+h.titulo+'</strong> ('+h.campo+') — '+h.texto+'. <em>Fonte:</em> '+h.fonte).join('<br>');
-  const ans='Sou um assistente acadêmico embasado em trabalhos de universidades e pesquisas da área de Ciência da Produção Animal (nacionais e internacionais), artigos e revistas científicas. Mesmo para uma pergunta geral, minha resposta parte da base acadêmica. Os principais conceitos que disponibilizo são:<br>'+linhas+'<br><br>Em que posso ajudar?';
-  return ans+'<br>'+academicSearchLinks(userMessage);
+  // --- PRODUÇÃO ANIMAL (1-2 linhas, linguagem natural) ---
+  if(/zoomótica/i.test(m))
+   return 'Zoomótica é usar sensores e tecnologia para cuidar do ambiente dos animais o tempo todo, melhorando o bem-estar do rebanho.';
+  if(/thi|temperatura|umidade|estresse|térmico/i.test(m))
+   return 'O THI junta calor e umidade para dizer se o animal está confortável; acompanhar isso evita o estresse do calor.';
+  if(/welfare|awin|classyfarm|cinco/i.test(m))
+   return 'Welfare Quality, AWIN e ClassyFarm medem o bem-estar do animal; as Cinco Liberdades e os Cinco Domínios resumem o que ele precisa para viver bem.';
+  if(/this|esp32|dht22|iot|termohigrometr/i.test(m))
+   return 'O THIS é um aparelho barato que mede calor e umidade e manda os dados para uma planilha, ajudando o produtor a decidir.';
+  if(/preciva|pecuária|precisão|bovino|leite/i.test(m))
+   return 'Na pecuária de precisão, a tecnologia acompanha o ambiente e o animal para manejar melhor o rebanho, mesmo no calor.';
+  // --- resposta geral curta e natural ---
+  return 'Posso te ajudar com criação de animais (peso, calor, água, ração, saúde) e com temas de produção animal. Me diga o que quer saber.';
  }
 /* ============================================================
     BUSCA EM REPOSITÓRIOS ACADÊMICOS EXTERNOS
